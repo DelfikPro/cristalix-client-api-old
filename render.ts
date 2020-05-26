@@ -85,12 +85,11 @@ export class RenderBoard extends RenderRect {
                 width: width
             }
         });
-        const region = this.region;
-        let { x, y } = region.pos;
+        this.region.wh = { x: maxWidth + 3, y: lines.length * 9 + 2 };
+        const pos = super.render(_mousePos, resolution);
+        let { x, y } = pos;
         x += 1;
         y += 3;
-        region.wh = { x: maxWidth + 3, y: lines.length * 9 + 2 };
-        const pos = super.render(_mousePos, resolution);
         for (const line of lines) {
             Draw.drawString(line.text, x, y, line.color, line.dropShadow);
             y += 9;
