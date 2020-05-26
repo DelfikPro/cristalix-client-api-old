@@ -40,6 +40,8 @@ declare class Draw {
     static trimStringToWidth(text: string, width: number, reverse?: boolean): string;
 
     static drawSplitString(text: string, x: number, y: number, wrapWidth: number, textColor?: number): void;
+
+    static getResolution(): ScaledResolution;
 }
 
 declare type EnumFacing = 'DOWN' | 'UP' | 'NORTH' | 'SOUTH' | 'WEST' | 'EAST';

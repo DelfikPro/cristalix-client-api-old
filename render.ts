@@ -100,12 +100,12 @@ export class RenderBoard extends RenderRect {
 }
 
 export class RenderLabel extends RenderRect {
-    constructor(public region: RenderRegion, public background: number, private text: RenderText) {
+    constructor(public region: RenderRegion, public background: number, readonly text: () => RenderText) {
         super(region, background);
     }
     public render(_mousePos: V2, resolution: ScaledResolution): V2 {
         const pos = super.render(_mousePos, resolution);
-        const text = this.text;
+        const text = this.text()!;
         const color = text.color;
         const dropShadow = text.dropShadow;
         Draw.drawString(text.text(), pos.x + 1, pos.y + 3, (color && color()) ?? -1, (dropShadow && dropShadow()) ?? false);
@@ -113,16 +113,20 @@ export class RenderLabel extends RenderRect {
     }
 }
 
-let board = new RenderBoard({
-    pos: { x: 4, y: 13 },
-    alignment: alignmentExact()
-} as RenderRegion, -1);
-board.background = 1610612736;
-board.line(...[
-    {
-        text: () => "Hello, World!"
+export class RenderButon extends RenderLabel {
+    public enabled: boolean = true;
+
+    constructor(public region: RenderRegion, public background: number, readonly text: () => RenderText) {
+        super(region, background, text);
     }
-]);
-Events.on(this, 'gui_overlay_render', (e: ScaledResolution) => {
-    board.render(null, e);
-}, 100);
+
+    public isMouseOver(x: number, y: number, resolution: ScaledResolution): boolean {
+        if (!this.enabled) {
+            return false;
+        }
+        const region = this.region;
+        const pos = region.alignment(region.pos, resolution)!;
+        const wh = region.wh;
+        return x >= pos.x && x <= pos.x + wh.x && y >= pos.y && y <= pos.y + wh.y;
+    }
+}
