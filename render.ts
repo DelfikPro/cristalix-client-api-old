@@ -64,8 +64,7 @@ export class RenderBoard extends RenderRect {
     }
 
     public line(...lines: RenderText[]): RenderBoard {
-        this.lines.push(...lines);
-        return this;
+        return this.lines.push(...lines) && this;
     }
 
     public render(_mousePos: V2, resolution: ScaledResolution): V2 {
