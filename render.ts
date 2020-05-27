@@ -128,24 +128,3 @@ export class RenderButon extends RenderLabel {
         return x >= pos.x && x <= pos.x + wh.x && y >= pos.y && y <= pos.y + wh.y;
     }
 }
-
-const board = new RenderBoard(
-    {
-        pos: {x:4,y:4},
-        alignment: alignmentExact()
-    } as RenderRegion, 1342177280
-);
-board.line(...[
-    {
-        text: () => `X: ${Player.getPosX()}`
-    },
-    {
-        text: () => `Y: ${Player.getPosY()}`
-    },
-    {
-        text: () => `Z: ${Player.getPosZ()}`
-    }
-]);
-Events.on(this, 'gui_overlay_render', (e: ScaledResolution) => {
-    board.render(null, e);
-});

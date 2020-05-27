@@ -89,7 +89,7 @@ declare type KeyPressEvent = {
     cancelled: boolean,
 };
 
-declare type EventAction = 'chat_send' | 'gui_overlay_render' | 'game_loop' | 'static KEY_press' | 'server_connect' | 'server_switch' | 'overlay_render' | string;
+declare type EventAction = 'chat_send' | 'gui_overlay_render' | 'game_loop' | 'static KEY_press' | 'server_connect' | 'server_switch' | 'overlay_render' | 'game_tick_pre' | 'game_tick_post' | string;
 declare type Listener<T> = (event: T) => void;
 
 declare class Events {
@@ -339,6 +339,8 @@ declare class Player {
 
     static getMaxHealth(): number | 0.0;
 
+    static isOnGround(): boolean | false;
+
     // TODO getActivePotionEffects
 
     static getGameType(): GameType | undefined;
@@ -381,3 +383,20 @@ declare class World {
 
     static getTotalTime(): number | 0;
 }
+
+var jumpState = 0;
+Events.on(this, 'game_tick_post', () => {
+    if (jumpState === -1 && Player.isOnGround()) {
+        jumpState = 0;
+    }
+});
+Events.on(this, 'key_press', (e: KeyPressEvent) => {
+    if (e.key === Keyboard.KEY_SPACE) {
+        if (jumpState === 0) {
+            jumpState = 1;
+        } else if (jumpState === 1 && !Player.isOnGround()) {
+            jumpState = -1;
+            PlayerExtensions.jump();
+        }
+    }
+});
