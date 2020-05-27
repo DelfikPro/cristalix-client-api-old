@@ -1,3 +1,35 @@
+// SERVERSIDE
+declare class PlayerExtensions {
+    static jump(): void;
+
+    static setMotionX(motionX: number): void;
+
+    static setMotionY(motionY: number): void;
+
+    static setMotionZ(motionZ: number): void;
+
+    static setMotions(x: number, y: number, z: number): void;
+
+    static setSneaking(sneaking: boolean): void;
+}
+
+declare class PluginMessages {
+    static on(handle: any, channel: string, listener: (e: ByteBuf) => void, priority?: number): void;
+
+    static off(channel: string, listener: (e: ByteBuf) => void): void;
+
+    static off(handle: any): void;
+
+    static emit(channel: string, data: ByteBuf): void;
+}
+
+declare class WorldExtensions {
+    static setTotalTime(time: number): void;
+
+    static setTime(time: number): void;
+}
+
+// BOTH
 declare class Display {
     static getTitle(): string;
 
