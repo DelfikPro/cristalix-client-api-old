@@ -383,20 +383,3 @@ declare class World {
 
     static getTotalTime(): number | 0;
 }
-
-var jumpState = 0;
-Events.on(this, 'game_tick_post', () => {
-    if (jumpState === -1 && Player.isOnGround()) {
-        jumpState = 0;
-    }
-});
-Events.on(this, 'key_press', (e: KeyPressEvent) => {
-    if (e.key === Keyboard.KEY_SPACE) {
-        if (jumpState === 0) {
-            jumpState = 1;
-        } else if (jumpState === 1 && !Player.isOnGround()) {
-            jumpState = -1;
-            PlayerExtensions.jump();
-        }
-    }
-});
