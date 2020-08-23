@@ -232,7 +232,7 @@ type HubServerInfo = {
 
 	Events.on(plugin, 'key_press', (e: KeyPressEvent) => {
 		if (e.key === Keyboard.KEY_ESCAPE) {
-			Draw.
+			
 		}
 	});
 

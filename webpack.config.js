@@ -1,10 +1,13 @@
 const path = require('path');
 
+moduleName = process.env.MODULE_NAME + '';
+if (!/^[A-Za-z0-9_-]+$/.test(moduleName)) throw new Error("Invalid MODULE_NAME: " + moduleName);
+
 module.exports = {
-  entry: './src/hub.ts',
+  entry: './src/' + moduleName + '.ts',
   mode: 'production',
   output: {
-    filename: 'hub.bundle.js',
+    filename: moduleName + '.bundle.js',
     path: path.resolve(__dirname, 'dist'),
     libraryTarget: 'this',
   },
