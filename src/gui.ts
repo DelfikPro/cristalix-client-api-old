@@ -290,7 +290,7 @@ export class Box extends Element {
         super.prepare(time, parentWidth, parentHeight, width, height);
 
 
-        GlStateManager.disableDepth();
+        // GlStateManager.disableDepth();
         if (this.texture) {
             Textures.bindTexture(this.texture);
             GL11.glColor4f(
@@ -302,7 +302,7 @@ export class Box extends Element {
             Draw.drawScaledCustomSizeModalRect(0, 0, 0, 0, 1, 1, width, height, 1, 1);
         }
         else Draw.drawRect(0, 0, width, height, this.lastColor);
-        GlStateManager.enableDepth();
+        // GlStateManager.enableDepth();
 
         for (var i = 0; i < this.children.length; i++) {
             this.children[i].render(time, width, height);
@@ -372,7 +372,7 @@ export class Box extends Element {
 
 export class Item extends Element {
 
-    readonly item: ItemStack;
+    item: ItemStack;
 
     constructor(data: ItemData) {
         super(data);
@@ -383,11 +383,11 @@ export class Item extends Element {
         if (!this.enabled) return;
 
         GL11.glPushMatrix();
-        // renderhelper.enableStandardItemLighting();
+        // if (RenderHelper) RenderHelper.enableStandardItemLighting();
         // GL11.glTranslatef(0, 0, +100);
         super.prepare(time, parentWidth, parentHeight, 16, 16);
         Draw.renderItemAndEffectIntoGUI(this.item, this.x.value, this.y.value);
-        // renderhelper.disableStandardItemLighting();
+        // if (RenderHelper) RenderHelper.disableStandardItemLighting();
         GL11.glPopMatrix();
 
     }

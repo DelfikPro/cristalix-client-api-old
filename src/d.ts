@@ -235,6 +235,20 @@ declare class Events {
     static post<T>(action: EventAction | string, event: T): T;
 }
 
+declare class Config {
+
+    static load(name: string): any;
+
+    static save(name: string, content: any): void;
+
+}
+
+declare class ChatExtensions {
+
+    static sendChatMessage(message: string): void;
+
+}
+
 declare type GameType = 'NOT_SET' | 'SURVIVAL' | 'CREATIVE' | 'ADVENTURE' | 'SPECTATOR';
 
 declare const plugin: any;
@@ -244,6 +258,9 @@ declare class ItemStack { }
 
 
 declare class Inventory {
+
+    static getStackInSlot(slot: number): ItemStack;
+
     static getMaxDamage(slot: number): number | 0;
 
     static getItemDamage(slot: number): number | 0;
