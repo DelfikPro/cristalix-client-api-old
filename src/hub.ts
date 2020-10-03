@@ -1,8 +1,8 @@
-/// <reference path="./d.ts" />
-import * as easing from './easing';
-import * as gui from './gui';
-import * as vecmath from './vecmath';
-import { text, rect } from './gui';
+/// <reference path="./api/d.ts" />
+import * as easing from './api/easing';
+import * as gui from './api/gui';
+import * as vecmath from './api/vecmath';
+import { text, rect } from './api/gui';
 
 type HubServerInfo = {
 	realmType: string,
@@ -88,7 +88,7 @@ type HubServerInfo = {
 				color: {a: 0, r: 0, g: 1, b: 0},
 				onHover: (ss, b) => {
 					this.a.transit(b ? 0.5 : 0, 250, easing.outCubic);
-					this.item.rotation.transit(b ? -45 : 0, 250, easing.outCubic);
+					this.item.rotationZ.transit(b ? -45 : 0, 250, easing.outCubic);
 				},
 				onLeftClick: (ss) => {
 					sendOpenedGui(this.realmType);
@@ -187,7 +187,7 @@ type HubServerInfo = {
 
 		for (let child of mainMenu.children) {
 			let hubGame = child as HubGame;
-			child.rotation.transit(child.rotation.value, 75 * (hubGame.xPos + hubGame.yPos), easing.none, () => {
+			child.rotationZ.transit(child.rotationZ.value, 75 * (hubGame.xPos + hubGame.yPos), easing.none, () => {
 				child.scale.transit(state == 1 ? 1 : 0, 300, easing.outCubic);
 			});
 		}

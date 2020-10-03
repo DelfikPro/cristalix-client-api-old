@@ -1,8 +1,7 @@
-/// <reference path="./d.ts" />
-import * as easing from './easing';
-import * as gui from './gui';
-import { text } from './gui';
-
+/// <reference path="./api/d.ts" />
+import * as easing from './api/easing';
+import * as gui from './api/gui';
+import { text } from './api/gui';
 
 (function(plugin: any) {
 
@@ -25,8 +24,6 @@ import { text } from './gui';
 	});
 
 	gui.overlay.push(title, subtitle);
-
-
 
 	PluginMessages.on(plugin, 'itemtitle', (bb: ByteBuf) => {
 		let item = bb.readItemStack();

@@ -1,7 +1,8 @@
-/// <reference path="./d.ts" />
-import * as easing from './easing';
-import * as gui from './gui';
-import * as vecmath from './vecmath';
+/// <reference path="./api/d.ts" />
+import * as easing from './api/easing';
+import * as gui from './api/gui';
+import * as vecmath from './api/vecmath';
+import { text, rect } from './api/gui';
 
 
 (function(plugin: any) {

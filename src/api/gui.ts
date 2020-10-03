@@ -17,7 +17,9 @@ export class Animatable {
     easer: easing.Easer = easing.none;
     onFinish: Callback = null;
 
-    constructor(public value: number) {}
+    constructor(public value: number) {
+        this.toValue = value;
+    }
 
     public transit(value: number, duration: number, easer: easing.Easer, onFinish?: Callback) : void {
 
@@ -89,7 +91,9 @@ export type ElementData = {
     readonly scale?: number;
     readonly align?: vecmath.V2;
     readonly origin?: vecmath.V2;
-    readonly rotation?: number;
+    readonly rotationX?: number;
+    readonly rotationY?: number;
+    readonly rotationZ?: number;
     readonly enabled?: boolean;
     readonly noDepth?: boolean;
 }
@@ -138,7 +142,7 @@ export abstract class Element {
 
     x: Animatable;
     y: Animatable;
-    z: number;
+    z: Animatable;
     a: Animatable;
     r: Animatable;
     g: Animatable;
@@ -148,7 +152,9 @@ export abstract class Element {
     alignY: Animatable;
     originX: Animatable;
     originY: Animatable;
-    rotation: Animatable;
+    rotationX: Animatable;
+    rotationY: Animatable;
+    rotationZ: Animatable;
     animatables: Animatable[];
     noDepth: boolean;
     enabled: boolean;
@@ -158,7 +164,7 @@ export abstract class Element {
 
         this.x = new Animatable(data.x || 0);
         this.y = new Animatable(data.y || 0);
-        this.z = data.z || 0;
+        this.z = new Animatable(data.z || 0);
 
         let color = data.color || {};
 
@@ -177,16 +183,19 @@ export abstract class Element {
         this.originX = new Animatable(origin.x || 0);
         this.originY = new Animatable(origin.y || 0);
 
-        this.rotation = new Animatable(data.rotation || 0);
+        this.rotationX = new Animatable(data.rotationX || 0);
+        this.rotationY = new Animatable(data.rotationY || 0);
+        this.rotationZ = new Animatable(data.rotationZ || 0);
 
         this.enabled = data.enabled == null ? true : data.enabled;
 
         this.noDepth = !!data.noDepth;
 
         this.animatables = [
-                            this.x, this.y, 
+                            this.x, this.y, this.z,
                             this.a, this.r, this.g, this.b, 
-                            this.scale, this.rotation, 
+                            this.scale, 
+                            this.rotationX, this.rotationY, this.rotationZ,
                             this.alignX, this.alignY, 
                             this.originX, this.originY, 
                            ];
@@ -201,9 +210,11 @@ export abstract class Element {
 
 
         GL11.glTranslatef(parentWidth * this.alignX.value, parentHeight * this.alignY.value, 0)
-        GL11.glRotatef(this.rotation.value, 0, 0, 1);
-        GL11.glTranslatef(this.x.value, this.y.value, this.z);
-        GL11.glScalef(this.scale.value, this.scale.value, 1);
+        if (this.rotationX.value) GL11.glRotatef(this.rotationX.value, 1, 0, 0);
+        if (this.rotationY.value) GL11.glRotatef(this.rotationY.value, 0, 1, 0);
+        if (this.rotationZ.value) GL11.glRotatef(this.rotationZ.value, 0, 0, 1);
+        GL11.glTranslatef(this.x.value, this.y.value, this.z.value);
+        GL11.glScalef(this.scale.value, this.scale.value, this.scale.value);
         GL11.glTranslatef(-elementWidth * this.originX.value, -elementHeight * this.originY.value, 0);
         this.lastColor = colorParts2Hex(this.a.value, this.r.value, this.g.value, this.b.value);
     }
@@ -383,11 +394,11 @@ export class Item extends Element {
         if (!this.enabled) return;
 
         GL11.glPushMatrix();
-        // if (RenderHelper) RenderHelper.enableStandardItemLighting();
+        RenderHelper.enableGUIStandardItemLighting();
         // GL11.glTranslatef(0, 0, +100);
         super.prepare(time, parentWidth, parentHeight, 16, 16);
         Draw.renderItemAndEffectIntoGUI(this.item, this.x.value, this.y.value);
-        // if (RenderHelper) RenderHelper.disableStandardItemLighting();
+        RenderHelper.disableStandardItemLighting();
         GL11.glPopMatrix();
 
     }

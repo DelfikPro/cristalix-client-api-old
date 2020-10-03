@@ -167,6 +167,8 @@ declare class RenderHelper {
 
     static enableStandardItemLighting(): void;
 
+    static enableGUIStandardItemLighting(): void;
+
     static disableStandardItemLighting(): void;
 
 }
@@ -208,6 +210,31 @@ declare class Draw {
 
 }
 
+declare class Entity {
+    
+    getEntityId(): number;
+
+    getName(): string;
+
+    hasCustomName(): boolean;
+
+    getCustomNameTag(): string;
+
+    getAlwaysRenderNameTag(): boolean;
+
+    getX(): number;
+
+    getY(): number;
+
+    getZ(): number;
+
+    getPrevX(): number;
+    
+    getPrevY(): number;
+
+    getPrevZ(): number;
+
+}
 
 declare type EnumFacing = 'DOWN' | 'UP' | 'NORTH' | 'SOUTH' | 'WEST' | 'EAST';
 declare type EquipmentSlot = 'FEET' | 'LEGS' | 'CHEST' | 'HEAD' | 'OFFHAND';
@@ -220,6 +247,17 @@ declare type ChatEvent = {
 declare type KeyPressEvent = {
     key: number,
     cancelled: boolean,
+};
+declare type NameRenderEvent = {
+    entity: Entity,
+    x: number, 
+    y: number, 
+    z: number,
+    cancelled: boolean,
+};
+declare type RenderPassEvent = {
+    pass: number,
+    partialTicks: number,
 };
 
 declare type EventAction = 'chat_send' | 'gui_overlay_render' | 'game_loop' | 'static KEY_press' | 'server_connect' | 'server_switch' | 'overlay_render' | 'game_tick_pre' | 'game_tick_post' | string;
@@ -482,6 +520,12 @@ declare class Player {
     static getPosY(): number | 0.0;
 
     static getPosZ(): number | 0.0;
+
+    static getPrevX(): number | 0.0;
+
+    static getPrevY(): number | 0.0;
+
+    static getPrevZ(): number | 0.0;
 
     static getYaw(): number | 0.0;
 
