@@ -23,279 +23,330 @@ type TopEntry = {
 	const BOTTOM_RIGHT = {x: 1, y: 1};
 	const BOTTOM_LEFT = {x: 0, y: 1};
 
-	let topData: TopEntry[] = [
-		{key: '__xDark', value: 1000},
-		{key: 'Func', value: 968},
-		{key: 'ilya_fx', value: 871},
-		{key: '_Demaster_', value: 824},
-		{key: 'KlashRaick', value: 790},
-		{key: 'Pepel_ok', value: 485},
-		{key: 'EveryMe', value: 301},
-		{key: 'lakaithree', value: 100},
-		{key: 'НекийЛач', value: 50},
-		{key: 'Test', value: 1},
-	]
+	type TopData = {
+		boardWidth: number;
+		spacing: number;
+		lineHeight: number;
+		squares: number;
+		indexWidth: number;
+		statWidth: number;
+		color: gui.Color;
+		x: number;
+		y: number;
+		z: number;
+		yaw: number;
+	};
 
-    // Будет удалено
-	PluginMessages.on(plugin, 'museum:top', (buf: ByteBuf) => {
-	    let data = JSON.parse(UtilNetty.readString(buf, 65535)).EXPERIENCE
-        updateData(data as TopEntry[])
-	})
+	class Top {
 
-	// Ширина всей таблицы
-	var boardWidth = 200;
+		// Размеры большого квадрата
+		readonly offset: number;
 
-	// Расстояние между элементами таблицы
-	var spacing = 1;
+		// Ширина всей таблицы
+		readonly boardWidth: number;
 
-	// Высота маленькой строчки
-	var lineHeight = 9;
+		// Расстояние между элементами таблицы
+		readonly spacing: number;
+
+		// Высота маленькой строчки
+		readonly lineHeight: number;
 	
-	// Количество больших квадратов
-	let squares = 3;
+		// Количество больших квадратов
+		readonly squares: number;
 
-	// Размеры большого квадрата
-	let offset = (boardWidth - spacing * (squares - 1)) / squares;
+	    // Ширина ячеек для номера места (#1 #2 #3)
+	    readonly indexWidth: number;
 
-	// Цвет ячеек
-	let color = {a: 0.5, r: 0, g: 0, b: 0};
+	    // Ширина ячеек для статистики
+	    readonly statWidth: number;
 
-	// Ширина ячеек для номера места (#1 #2 #3)
-	let indexWidth = 14;
+	    // Цвет фона ячеек
+	    readonly color: gui.Color;
 
-	// Ширина ячеек для статистики
-	let statWidth = 30;
+	    readonly x: number;
+	    readonly y: number;
+	    readonly z: number;
+	    readonly yaw: number;
 
-	let board = gui.rect({
-		width: boardWidth,
-		origin: {x: 0.5, y: 0}
-	});
 
-	let entity = gui.rect({
+		readonly board: gui.Box;
+		readonly entity: gui.Box;
 
-		scale: 0.0625 * 0.5,
-		children: [
-			board,
-			text({
-				y: -offset / 2 - 2,
-				z: -0.1,
-				text: '§6§lТоп по опыту',
-				scale: 2,
-				origin: BOTTOM,
-				align: TOP,
-			}),
-			text({
-				x: -0.5,
-				y: -offset / 2 - 2 + 0.5,
-				z: -0.05,
-				text: '¨222200§lТоп по опыту',
-				scale: 2,
-				origin: BOTTOM,
-				align: TOP,
-			}),
-			text({
-				x: -0.5,
-				y: -offset / 2 - 2 - 0.5,
-				z: -0.05,
-				text: '¨222200§lТоп по опыту',
-				scale: 2,
-				origin: BOTTOM,
-				align: TOP,
-			}),
-			text({
-				x: 0.5,
-				y: -offset / 2 - 2 - 0.5,
-				z: -0.05,
-				text: '¨222200§lТоп по опыту',
-				scale: 2,
-				origin: BOTTOM,
-				align: TOP,
-			}),
-			text({
-				x: 0.5,
-				y: -offset / 2 - 2 + 0.5,
-				z: -0.05,
-				text: '¨222200§lТоп по опыту',
-				scale: 2,
-				origin: BOTTOM,
-				align: TOP,
-			})
-		],
-	});
+		scroll: number;
 
-	function updateData(topData: TopEntry[]): void {
-        board.children = [];
 
-		let place = 0;
+		constructor(data: TopData) {
+			this.boardWidth = data.boardWidth || 200;
+			this.spacing = data.spacing || 1;
+			this.lineHeight = data.lineHeight || 9;
+			this.squares = data.squares || 3;
+			this.indexWidth = data.indexWidth || 14;
+			this.statWidth = data.statWidth || 30;
+			this.color = data.color || {a: 0.5, r: 0, g: 0, b: 0};
+			this.offset = (data.boardWidth - data.spacing * (data.squares - 1)) / data.squares;
+			
+			this.x = data.x;
+			this.y = data.y;
+			this.z = data.z;
+			this.yaw = data.yaw || 0;
 
-		// Большие квадраты для самых лучших игроков
-		for (let i = 0; i < squares && topData; i++) {
-			place++;
-			let topInfo = topData.shift();
-			if (!topInfo) break;
-			board.children.push(gui.rect({
-				width: offset,
-				height: offset,
-				origin: {x: i * (1 / (squares - 1)), y: 0.5},
-				align: {x: i * (1 / (squares - 1)), y: 0.5},
-				color: {a: 0, r: 0, g: 0, b: 0},
-				children: [rect({
-					width: offset,
-					height: offset,
-					color: {a: 0, r: 0, g: 0, b: 0},
-					origin: CENTER,
-					align: CENTER,
-					children: [
-						rect({
-							color: color,
-							height: lineHeight,
-							width: indexWidth,
-							children: [text({
-								z: -1,
-								text: '#' + place,
-								origin: CENTER, align: CENTER,
-							})]
-						}),
-						rect({
-							color: color,
-							height: lineHeight,
-							origin: TOP_RIGHT,
-							align: TOP_RIGHT,
-							width: offset - indexWidth - spacing,
-							children: [text({
-								z: -1,
-								text: topInfo.key,
-								origin: CENTER, align: CENTER,
-							})]
-						}),
-						rect({
-							color: color,
-							height: lineHeight,
-							origin: BOTTOM,
-							align: BOTTOM,
-							width: offset,
-							children: [text({
-								z: -1,
-								text: '§e' + topInfo.value,
-								origin: CENTER, align: CENTER,
-							})]
-						}),
-					]
-				})]
-					// Тот квадратик, тот что под головой - пустое место
-					// rect({
-					// 	color: color,
-					// 	width: offset,
-					// 	height: offset - (spacing + lineHeight) * 2,
-					// 	y: lineHeight + spacing
-					// })
-			}));
+			this.board = rect({
+				width: this.boardWidth,
+				origin: {x: 0.5, y: 0}
+			});
+			this.entity = gui.rect({
+
+				scale: 0.0625 * 0.5,
+				children: [
+					this.board,
+					text({
+						y: -this.offset / 2 - 2,
+						z: -0.1,
+						text: '§6§lТоп по опыту',
+						scale: 2,
+						origin: BOTTOM,
+						align: TOP,
+					}),
+					text({
+						x: -0.5,
+						y: -this.offset / 2 - 2 + 0.5,
+						z: -0.05,
+						text: '¨222200§lТоп по опыту',
+						scale: 2,
+						origin: BOTTOM,
+						align: TOP,
+					}),
+					text({
+						x: -0.5,
+						y: -this.offset / 2 - 2 - 0.5,
+						z: -0.05,
+						text: '¨222200§lТоп по опыту',
+						scale: 2,
+						origin: BOTTOM,
+						align: TOP,
+					}),
+					text({
+						x: 0.5,
+						y: -this.offset / 2 - 2 - 0.5,
+						z: -0.05,
+						text: '¨222200§lТоп по опыту',
+						scale: 2,
+						origin: BOTTOM,
+						align: TOP,
+					}),
+					text({
+						x: 0.5,
+						y: -this.offset / 2 - 2 + 0.5,
+						z: -0.05,
+						text: '¨222200§lТоп по опыту',
+						scale: 2,
+						origin: BOTTOM,
+						align: TOP,
+					})
+				],
+			});
 		}
 
-		// Простые тонкие строчки
-		let smallLineIndex = 0;
-		while (topData && place < 100) {
-			place++;
-			let topInfo = topData.shift();
-			if (!topInfo) break;
-	 
-			let y = (smallLineIndex + 0.5) * (lineHeight + spacing) + (offset + spacing) / 2;
-			smallLineIndex++;
 
-			board.children.push(gui.rect({
-				origin: LEFT, align: LEFT,
-				y: y,
-				width: indexWidth,
-				height: lineHeight,
-				color: color,
-				children: [text({
-					z: -1,
-					align: CENTER,
-					origin: CENTER,
-					text: '#' + place
-				})]
-			}));
+		render(partialTicks: number): void {
+			GL11.glPushMatrix();
 
-			board.children.push(gui.rect({
-				origin: LEFT, align: LEFT,
-				x: indexWidth + spacing,
-				y: y,
-				width: boardWidth - spacing * 2 - statWidth - indexWidth,
-				height: lineHeight,
-				color: color,
-				children: [text({
-					z: -1,
-					align: CENTER,
-					origin: CENTER,
-					text: topInfo.key
-				})]
-			}));
 
-			board.children.push(gui.rect({
-				origin: RIGHT, align: RIGHT,
-				y: y,
-				width: statWidth,
-				height: lineHeight,
-				color: color,
-				children: [text({
-					z: -1,
-					align: CENTER,
-					origin: CENTER,
-					text: '§e' + topInfo.value
-				})]
-			}));
+	        GL11.glTranslatef(
+	        	this.x - Player.getPosX() - (Player.getPosX() - Player.getPrevX()) * partialTicks, 
+	        	this.y - Player.getPosY() - (Player.getPosY() - Player.getPrevY()) * partialTicks, 
+	        	this.z - Player.getPosZ() - (Player.getPosZ() - Player.getPrevZ()) * partialTicks
+	        );
+	        GL11.glScalef(1, -1, -1);
+	        // Относительный поворот
+			GL11.glRotatef(this.yaw, 0, 1, 0);
+			this.updateCulling();
+
+
+	        // GL11.glDepthFunc(GL11.GL_LESS);
+			this.entity.render(JavaSystem.currentTimeMillis(), 16, 16);
+	        // GL11.glDepthFunc(GL11.GL_LEQUAL);
+
+			GL11.glPopMatrix();
+
+
 		}
-		updateCulling();
+
+		updateData(topData: TopEntry[]): void {
+		        this.board.children = [];
+
+				let place = 0;
+
+				// Большие квадраты для самых лучших игроков
+				for (let i = 0; i < this.squares && topData; i++) {
+					place++;
+					let topInfo = topData.shift();
+					if (!topInfo) break;
+					this.board.children.push(gui.rect({
+						width: this.offset,
+						height: this.offset,
+						origin: {x: i * (1 / (this.squares - 1)), y: 0.5},
+						align: {x: i * (1 / (this.squares - 1)), y: 0.5},
+						color: {a: 0, r: 0, g: 0, b: 0},
+						children: [rect({
+							width: this.offset,
+							height: this.offset,
+							color: {a: 0, r: 0, g: 0, b: 0},
+							origin: CENTER,
+							align: CENTER,
+							children: [
+								rect({
+									color: this.color,
+									height: this.lineHeight,
+									width: this.indexWidth,
+									children: [text({
+										z: -1,
+										text: '#' + place,
+										origin: CENTER, align: CENTER,
+									})]
+								}),
+								rect({
+									color: this.color,
+									height: this.lineHeight,
+									origin: TOP_RIGHT,
+									align: TOP_RIGHT,
+									width: this.offset - this.indexWidth - this.spacing,
+									children: [text({
+										z: -1,
+										text: topInfo.key,
+										origin: CENTER, align: CENTER,
+									})]
+								}),
+								rect({
+									color: this.color,
+									height: this.lineHeight,
+									origin: BOTTOM,
+									align: BOTTOM,
+									width: this.offset,
+									children: [text({
+										z: -1,
+										text: '§e' + topInfo.value,
+										origin: CENTER, align: CENTER,
+									})]
+								}),
+							]
+						})]
+							// Тот квадратик, тот что под головой - пустое место
+							// rect({
+							// 	color: color,
+							// 	width: offset,
+							// 	height: offset - (spacing + lineHeight) * 2,
+							// 	y: lineHeight + spacing
+							// })
+					}));
+				}
+
+				// Простые тонкие строчки
+				let smallLineIndex = 0;
+				while (topData && place < 100) {
+					place++;
+					let topInfo = topData.shift();
+					if (!topInfo) break;
+			 
+					let y = (smallLineIndex + 0.5) * (this.lineHeight + this.spacing) + (this.offset + this.spacing) / 2;
+					smallLineIndex++;
+
+					this.board.children.push(gui.rect({
+						origin: LEFT, align: LEFT,
+						y: y,
+						width: this.indexWidth,
+						height: this.lineHeight,
+						color: this.color,
+						children: [text({
+							z: -1,
+							align: CENTER,
+							origin: CENTER,
+							text: '#' + place
+						})]
+					}));
+
+					this.board.children.push(gui.rect({
+						origin: LEFT, align: LEFT,
+						x: this.indexWidth + this.spacing,
+						y: y,
+						width: this.boardWidth - this.spacing * 2 - this.statWidth - this.indexWidth,
+						height: this.lineHeight,
+						color: this.color,
+						children: [text({
+							z: -1,
+							align: CENTER,
+							origin: CENTER,
+							text: topInfo.key
+						})]
+					}));
+
+					this.board.children.push(gui.rect({
+						origin: RIGHT, align: RIGHT,
+						y: y,
+						width: this.statWidth,
+						height: this.lineHeight,
+						color: this.color,
+						children: [text({
+							z: -1,
+							align: CENTER,
+							origin: CENTER,
+							text: '§e' + topInfo.value
+						})]
+					}));
+				}
+
+				for (let child of this.board.children) {
+					if (!this.isVisible(child)) child.scale.value = 0;
+				}
+			}
+
+			isVisible(line: gui.Element): boolean {
+				let y = line.y.value + this.board.y.value;
+				return y > 0 && y < 100;
+			}
+
+			updateCulling(): void {
+				for (let lineWrapper of this.board.children) {
+					let scale = this.isVisible(lineWrapper) ? 1 : 0;
+					if (lineWrapper.scale.toValue != scale) lineWrapper.scale.transit(scale, 250, easing.none);
+				}
+			}
+
+
 	}
 
-	updateData(topData);
-
-	function updateCulling(): void {
-		for (let lineWrapper of board.children) {
-			let y = lineWrapper.y.value + board.y.value;
-			// let angle = y < 0 ? -90 : y > 100 ? 90 : 0;
-			let scale = y < 0 ? 0 : y > 100 ? 0 : 1;
-			// let line = (lineWrapper as gui.Box).children[0]
-			// if (line.rotationX.toValue != angle) line.rotationX.transit(angle, 250, easing.none);
-			if (lineWrapper.scale.toValue != scale) lineWrapper.scale.transit(scale, 250, easing.none);
-		}
-	}
-
-	let scroll = 0;
+	let tops: Record<string, Top> = {};
 
 	Events.on(plugin, 'game_loop', () => {
-		let dwheel = Math.round(Mouse.getDWheel() / 10 / lineHeight) * lineHeight;
-		if (dwheel) {
-			scroll += dwheel;
-	        board.y.transit(scroll, 400, easing.outQuint);
+		let dwheel = Mouse.getDWheel();
+		for (let topAddress in tops) {
+			let top: Top = tops[topAddress];
+			let dscroll = Math.round(dwheel / 10 / top.lineHeight) * top.lineHeight;
+			if (dscroll) {
+				top.scroll += dscroll;
+		        top.board.y.transit(top.scroll, 400, easing.outQuint);
+			}
 		}
 	});
 
 	Events.on(plugin, 'render_pass_ticks', (event: RenderPassEvent) => {
-        GL11.glPushMatrix();
-
-        let holoX = 5;
-        let holoY = 98;
-        let holoZ = 0;
-
-        let t = event.partialTicks;
-
-        GL11.glTranslatef(
-        	holoX - Player.getPosX() - (Player.getPosX() - Player.getPrevX()) * t, 
-        	holoY - Player.getPosY() - (Player.getPosY() - Player.getPrevY()) * t, 
-        	holoZ - Player.getPosZ() - (Player.getPosZ() - Player.getPrevZ()) * t
-        );
-        GL11.glScalef(1, -1, -1);
-        // Относительный поворот
-		GL11.glRotatef(90, 0, 1, 0);
-		updateCulling();
-
-
-        // GL11.glDepthFunc(GL11.GL_LESS);
-		entity.render(JavaSystem.currentTimeMillis(), 16, 16);
-        // GL11.glDepthFunc(GL11.GL_LEQUAL);
-
-		GL11.glPopMatrix();
-
+        for (let topAddress in tops) {
+        	tops[topAddress].render(event.partialTicks);
+        }
 	});
+
+
+	PluginMessages.on(plugin, 'tops:update', (buf: ByteBuf) => {
+		let data = JSON.parse(UtilNetty.readString(buf, 16777215));
+		for (let key in data) 
+			tops[key].updateData(data[key]);
+	});
+
+	PluginMessages.on(plugin, 'tops:create', (buf: ByteBuf) => {
+		let data = JSON.parse(UtilNetty.readString(buf, 16777215));
+		for (let key in data) 
+			tops[key] = new Top(data[key]);
+	});
+
+
 })(plugin);
