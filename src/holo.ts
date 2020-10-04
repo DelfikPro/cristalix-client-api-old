@@ -82,8 +82,9 @@ type TopEntry = {
 			this.squares = data.squares || 3;
 			this.indexWidth = data.indexWidth || 14;
 			this.statWidth = data.statWidth || 30;
+			ChatExtensions.printChatMessage(this.boardWidth + " " + this.spacing + " " + this.lineHeight + " " + this.squares + " " + this.indexWidth + " " + this.statWidth)
 			this.color = data.color || {a: 0.5, r: 0, g: 0, b: 0};
-			this.offset = (data.boardWidth - data.spacing * (data.squares - 1)) / data.squares;
+			this.offset = (this.boardWidth - this.spacing * (this.squares - 1)) / this.squares;
 			
 			this.x = data.x;
 			this.y = data.y;
@@ -249,12 +250,12 @@ type TopEntry = {
 					ChatExtensions.printChatMessage('§eplace: §f' + place + '§e, topInfo: §f' + topInfo + '§e, topData.length: §f' + topData.length)
 					if (!topInfo) break;
 			 
-					let y = (smallLineIndex + 0.5) * (this.lineHeight + this.spacing) + (this.offset + this.spacing) / 2;
+					let ty = (smallLineIndex + 0.5) * (this.lineHeight + this.spacing) + (this.offset + this.spacing) / 2;
 					smallLineIndex++;
 
 					this.board.children.push(gui.rect({
 						origin: LEFT, align: LEFT,
-						y: y,
+						y: ty,
 						width: this.indexWidth,
 						height: this.lineHeight,
 						color: this.color,
@@ -269,7 +270,7 @@ type TopEntry = {
 					this.board.children.push(gui.rect({
 						origin: LEFT, align: LEFT,
 						x: this.indexWidth + this.spacing,
-						y: y,
+						y: ty,
 						width: this.boardWidth - this.spacing * 2 - this.statWidth - this.indexWidth,
 						height: this.lineHeight,
 						color: this.color,
@@ -283,7 +284,7 @@ type TopEntry = {
 
 					this.board.children.push(gui.rect({
 						origin: RIGHT, align: RIGHT,
-						y: y,
+						y: ty,
 						width: this.statWidth,
 						height: this.lineHeight,
 						color: this.color,
@@ -339,13 +340,9 @@ type TopEntry = {
 	PluginMessages.on(plugin, 'museum:top-update', (buf: ByteBuf) => {
 		let str = UtilNetty.readString(buf, 16777215);
 		let data = JSON.parse(str);
-		ChatExtensions.printChatMessage(data);
 		for (let key in data) {
-			ChatExtensions.printChatMessage('Updating ' + key);
 			for (let top of tops) {
 				if (top.address == key) {
-					ChatExtensions.printChatMessage('§aFound top!');
-					ChatExtensions.printChatMessage((data[key] + "").replace('§', '').replace('¨', ''));
 					top.updateData(data[key])
 				}
 			}
