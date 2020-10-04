@@ -295,9 +295,9 @@ type TopEntry = {
 					}));
 				}
 
-				// for (let child of this.board.children) {
-				// 	if (!this.isVisible(child)) child.scale.value = 0;
-				// }
+				for (let child of this.board.children) {
+					if (!this.isVisible(child)) child.scale.value = 0;
+				}
 			}
 
 			isVisible(line: gui.Element): boolean {
@@ -306,10 +306,10 @@ type TopEntry = {
 			}
 
 			updateCulling(): void {
-				// for (let lineWrapper of this.board.children) {
-				// 	let scale = this.isVisible(lineWrapper) ? 1 : 0;
-				// 	if (lineWrapper.scale.toValue != scale) lineWrapper.scale.transit(scale, 250, easing.none);
-				// }
+				for (let lineWrapper of this.board.children) {
+					let scale = this.isVisible(lineWrapper) ? 1 : 0;
+					if (lineWrapper.scale.toValue != scale) lineWrapper.scale.transit(scale, 250, easing.none);
+				}
 			}
 
 
@@ -320,7 +320,7 @@ type TopEntry = {
 	Events.on(plugin, 'game_loop', () => {
 		let dwheel = Mouse.getDWheel();
 		for (let top of tops) {
-			let dscroll = Math.round(dwheel / 10 / top.lineHeight) * top.lineHeight;
+			let dscroll = dwheel / 10;
 			if (dscroll) {
 				top.scroll += dscroll;
 		        top.board.y.transit(top.scroll, 400, easing.outQuint);
