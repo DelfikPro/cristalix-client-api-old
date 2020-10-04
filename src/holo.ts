@@ -30,6 +30,7 @@ type TopEntry = {
 		squares: number;
 		indexWidth: number;
 		statWidth: number;
+		title: string;
 		color: gui.Color;
 		x: number;
 		y: number;
@@ -63,6 +64,9 @@ type TopEntry = {
 	    // Цвет фона ячеек
 	    readonly color: gui.Color;
 
+	    // Заголовок таблицы
+	    readonly title: string;
+
 	    readonly x: number;
 	    readonly y: number;
 	    readonly z: number;
@@ -83,6 +87,7 @@ type TopEntry = {
 			this.indexWidth = data.indexWidth || 14;
 			this.statWidth = data.statWidth || 30;
 			this.color = data.color || {a: 0.5, r: 0, g: 0, b: 0};
+			this.title = data.title || address;
 			this.offset = (this.boardWidth - this.spacing * (this.squares - 1)) / this.squares;
 			
 			this.x = data.x;
@@ -102,7 +107,7 @@ type TopEntry = {
 					text({
 						y: -this.offset / 2 - 2,
 						z: -0.1,
-						text: this.address,
+						text: '§6' + this.title,
 						scale: 2,
 						origin: BOTTOM,
 						align: TOP,
@@ -111,7 +116,7 @@ type TopEntry = {
 						x: -0.5,
 						y: -this.offset / 2 - 2 + 0.5,
 						z: -0.05,
-						text: '¨222200§lТоп по опыту',
+						text: '¨222200§l' + this.title,
 						scale: 2,
 						origin: BOTTOM,
 						align: TOP,
@@ -120,7 +125,7 @@ type TopEntry = {
 						x: -0.5,
 						y: -this.offset / 2 - 2 - 0.5,
 						z: -0.05,
-						text: '¨222200§lТоп по опыту',
+						text: '¨222200§l' + this.title,
 						scale: 2,
 						origin: BOTTOM,
 						align: TOP,
@@ -129,7 +134,7 @@ type TopEntry = {
 						x: 0.5,
 						y: -this.offset / 2 - 2 - 0.5,
 						z: -0.05,
-						text: '¨222200§lТоп по опыту',
+						text: '¨222200§l' + this.title,
 						scale: 2,
 						origin: BOTTOM,
 						align: TOP,
@@ -138,7 +143,7 @@ type TopEntry = {
 						x: 0.5,
 						y: -this.offset / 2 - 2 + 0.5,
 						z: -0.05,
-						text: '¨222200§lТоп по опыту',
+						text: '¨222200§l' + this.title,
 						scale: 2,
 						origin: BOTTOM,
 						align: TOP,
