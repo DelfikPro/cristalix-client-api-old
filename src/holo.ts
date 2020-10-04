@@ -337,11 +337,16 @@ type TopEntry = {
 
 	PluginMessages.on(plugin, 'museum:top-update', (buf: ByteBuf) => {
 		let str = UtilNetty.readString(buf, 16777215);
-		ChatExtensions.printChatMessage(str);
 		let data = JSON.parse(str);
+		ChatExtensions.printChatMessage(data);
 		for (let key in data) {
+			ChatExtensions.printChatMessage('Updating ' + key);
 			for (let top of tops) {
-				if (top.address == key) top.updateData(data[key])
+				if (top.address == key) {
+					ChatExtensions.printChatMessage('§aFound top!');
+					ChatExtensions.printChatMessage((data[key] + "").replace('§', '').replace('¨', ''));
+					top.updateData(data[key])
+				}
 			}
 		}
 	});
