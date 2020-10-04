@@ -249,9 +249,9 @@ export class Text extends Element {
         GL11.glPushMatrix();
         super.prepare(time, parentWidth, parentHeight, textWidth, textHeight);
         
-        GlStateManager.disableDepth();
+        // GlStateManager.disableDepth();
         Draw.drawString(this.text, 0, 0, -1, this.shadow);
-        GlStateManager.enableDepth();
+        // GlStateManager.enableDepth();
         GL11.glPopMatrix();
 
     }

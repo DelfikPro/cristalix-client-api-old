@@ -4,143 +4,250 @@ import * as gui from './api/gui';
 import * as vecmath from './api/vecmath';
 import { text, rect } from './api/gui';
 
+type TopEntry = {
+
+	key: string,
+	value: number
+
+};
 
 (function(plugin: any) {
 
 	gui.register(plugin);
 
-	let textLines: string[] = [
-		"Мне все время кажется что ты",
-		"Осталась там за поворотом",
-		"Как и все мои мечты",
-		"Что тлеют где-то у костра",
-		"Помнишь ли ты те дни, когда",
-		"Мы были полностью свободны",
-		"Те осенние дожди",
-		"И разговоры до утра",
-		"",
-		"Посмотри мне в глаза",
-		"Назови моё имя",
-		"Неужели всегда",
-		"Мы были с тобою такими?",
-		"",
-		"Снова чьи-то шаги в прихожей",
-		"И голос ни на кого не похожий",
-		"Сердца заглушил стук",
-		"Город всё тяжелее дышит",
-		"И либо наша с тобой едет крыша",
-		"Либо у всех вокруг",
-		"",
-		"На твоём лице я вижу словно",
-		"Отражение своих мыслей",
-		"На линованной бумаге",
-		"Пишешь только поперёк",
-		"Когда нам нечего терять",
-		"Становится уже не страшно",
-		"Мир приветливей и краше",
-		"Если выйти за порог",
-		"",
-		"Я так хочу уплыть куда-то далеко",
-		"Знаешь, жить в реальности так нелегко",
-		"Сегодня день немного хуже, чем прошедший",
-		"§dМне 17 лет и я сумасшедший",
-	];
+	const CENTER = {x: 0.5, y: 0.5};
+	const LEFT = {x: 0, y: 0.5};
+	const RIGHT = {x: 1, y: 0.5};
+	const TOP = {x: 0.5, y: 0};
+	const BOTTOM = {x: 0.5, y: 1};
+	const TOP_RIGHT = {x: 1, y: 0};
+	const TOP_LEFT = {x: 0, y: 0};
+	const BOTTOM_RIGHT = {x: 1, y: 1};
+	const BOTTOM_LEFT = {x: 0, y: 1};
 
+	let topData: TopEntry[] = [
+		{key: '__xDark', value: 1000},
+		{key: 'Func', value: 968},
+		{key: 'ilya_fx', value: 871},
+		{key: '_Demaster_', value: 824},
+		{key: 'KlashRaick', value: 790},
+		{key: 'Pepel_ok', value: 485},
+		{key: 'EveryMe', value: 301},
+		{key: 'lakaithree', value: 100},
+		{key: 'НекийЛач', value: 50},
+		{key: 'Test', value: 1},
+	]
+
+	// Ширина всей таблицы
 	var boardWidth = 200;
-	var offset = (boardWidth - 2) / 3;
+
+	// Расстояние между элементами таблицы
+	var spacing = 1;
+
+	// Высота маленькой строчки
+	var lineHeight = 9;
+	
+	// Количество больших квадратов
+	var squares = 3;
+
+	// Размеры большого квадрата
+	var offset = (boardWidth - spacing * (squares - 1)) / squares;
+
+	// Цвет ячеек
+	var color = {a: 0.5, r: 0, g: 0, b: 0};
+
+	// Ширина ячеек для номера места (#1 #2 #3)
+	var indexWidth = 14;
+
+	// Ширина ячеек для статистики
+	var statWidth = 30;
 
 	var board = gui.rect({
-		width: 200,
-		origin: {x: 0.5, y: 0},
-
-		children: [
-			rect({
-				z: -1,
-				width: 3, height: 3,
-				align: {x: 0, y: 0},
-				origin: {x: 0.5, y: 0.5},
-				color: {a: 1, r: 1, g: 0, b: 0}
-			}),
-			rect({
-				z: -1,
-				width: 3, height: 3,
-				align: {x: 1, y: 0},
-				origin: {x: 0.5, y: 0.5},
-				color: {a: 1, r: 1, g: 0, b: 0}
-			})
-		]
+		width: boardWidth,
+		origin: {x: 0.5, y: 0}
 	});
 
 	var entity = gui.rect({
 
 		scale: 0.0625 * 0.5,
-		children: [board],
+		children: [
+			board,
+			text({
+				y: -offset / 2 - 2,
+				z: -0.1,
+				text: '§6§lТоп по опыту',
+				scale: 2,
+				origin: BOTTOM,
+				align: TOP,
+			}),
+			text({
+				x: -0.5,
+				y: -offset / 2 - 2 + 0.5,
+				z: -0.05,
+				text: '¨222200§lТоп по опыту',
+				scale: 2,
+				origin: BOTTOM,
+				align: TOP,
+			}),
+
+			text({
+				x: -0.5,
+				y: -offset / 2 - 2 - 0.5,
+				z: -0.05,
+				text: '¨222200§lТоп по опыту',
+				scale: 2,
+				origin: BOTTOM,
+				align: TOP,
+			}),
+
+			text({
+				x: 0.5,
+				y: -offset / 2 - 2 - 0.5,
+				z: -0.05,
+				text: '¨222200§lТоп по опыту',
+				scale: 2,
+				origin: BOTTOM,
+				align: TOP,
+			}),
+
+			text({
+				x: 0.5,
+				y: -offset / 2 - 2 + 0.5,
+				z: -0.05,
+				text: '¨222200§lТоп по опыту',
+				scale: 2,
+				origin: BOTTOM,
+				align: TOP,
+			})
+		],
 
 	});
 
+	function updateData(topData: TopEntry[]): void {
 
-	board.children.push(gui.rect({
-		width: offset,
-		height: offset,
-		origin: {x: 0, y: 0.5},
-		align: {x: 0, y: 0.5},
-		color: {a: 0.5, r: 0, g: 0, b: 0},
-		children: [
-			gui.text({
-				align: {x: 0.5, y: 0},
-				origin: {x: 0.5, y: 0},
-				text: 'Топ 1'
-			})
-		]
-	}));
-	board.children.push(gui.rect({
-		width: offset,
-		height: offset,
-		origin: {x: 0.5, y: 0.5},
-		align: {x: 0.5, y: 0.5},
-		color: {a: 0.5, r: 0, g: 0, b: 0},
-		children: [
-			gui.text({
-				align: {x: 0.5, y: 0},
-				origin: {x: 0.5, y: 0},
-				text: 'Топ 2'
-			})
-		]
-	}));
-	board.children.push(gui.rect({
-		width: offset,
-		height: offset,
-		origin: {x: 1, y: 0.5},
-		align: {x: 1, y: 0.5},
-		color: {a: 0.5, r: 0, g: 0, b: 0},
-		children: [
-			gui.text({
-				align: {x: 0.5, y: 0},
-				origin: {x: 0.5, y: 0},
-				text: 'Топ 3'
-			})
-		]
-	}));
-	for (let i = 0; i < textLines.length; i++) {
-		board.children.push(gui.rect({
-			origin: {x: 0.5, y: 0},
-			align: {x: 0.5, y: 0},
-			y: (i + 0.5) * 10 + (offset + 1) / 2,
-			children: [gui.rect({
-				width: 200,
-				height: 9,
-				origin: {x: 0.5, y: 0.5},
-				color: {a: 0.5, r: 0, b: 0, g: 0},
-				children: [
-					gui.text({
-						align: {x: 0.5, y: 0},
-						origin: {x: 0.5, y: 0},
-						text: textLines[i]
-					})
-				]
-			})]
-		}));
+		var place = 0;
+
+		// Большие квадраты для самых лучших игроков
+		for (var i = 0; i < squares && topData; i++) {
+			place++;
+			let topInfo = topData.shift();
+			if (!topInfo) break;
+			board.children.push(gui.rect({
+				width: offset,
+				height: offset,
+				origin: {x: i * (1 / (squares - 1)), y: 0.5},
+				align: {x: i * (1 / (squares - 1)), y: 0.5},
+				color: {a: 0, r: 0, g: 0, b: 0},
+				children: [rect({
+					width: offset,
+					height: offset,
+					color: {a: 0, r: 0, g: 0, b: 0},
+					origin: CENTER,
+					align: CENTER,
+					// scale: i == 1 ? 1 : 0.9,
+					children: [
+						rect({
+							color: color,
+							height: lineHeight,
+							width: indexWidth,
+							children: [text({
+								z: -1,
+								text: '#' + place,
+								origin: CENTER, align: CENTER,
+							})]
+						}),
+						rect({
+							color: color,
+							height: lineHeight,
+							origin: TOP_RIGHT,
+							align: TOP_RIGHT,
+							width: offset - indexWidth - spacing,
+							children: [text({
+								z: -1,
+								text: topInfo.key,
+								origin: CENTER, align: CENTER,
+							})]
+						}),
+						rect({
+							color: color,
+							height: lineHeight,
+							origin: BOTTOM,
+							align: BOTTOM,
+							width: offset,
+							children: [text({
+								z: -1,
+								text: '§e' + topInfo.value,
+								origin: CENTER, align: CENTER,
+							})]
+						}),
+					]
+				})]
+					
+					// rect({
+					// 	color: color,
+					// 	width: offset,
+					// 	height: offset - (spacing + lineHeight) * 2,
+					// 	y: lineHeight + spacing
+					// })
+			}));
+		}
+
+		// Простые тонкие строчки
+		var smallLineIndex = 0;
+		while (topData && place < 100) {
+			place++;
+			let topInfo = topData.shift();
+			if (!topInfo) break;
+	 
+			let y = (smallLineIndex + 0.5) * (lineHeight + spacing) + (offset + spacing) / 2;
+			smallLineIndex++;
+
+			board.children.push(gui.rect({
+				origin: LEFT, align: LEFT,
+				y: y,
+				width: indexWidth,
+				height: lineHeight,
+				color: color,
+				children: [text({
+					z: -1,
+					align: CENTER,
+					origin: CENTER,
+					text: '#' + place
+				})]
+			}));
+
+			board.children.push(gui.rect({
+				origin: LEFT, align: LEFT,
+				x: indexWidth + spacing,
+				y: y,
+				width: boardWidth - spacing * 2 - statWidth - indexWidth,
+				height: lineHeight,
+				color: color,
+				children: [text({
+					z: -1,
+					align: CENTER,
+					origin: CENTER,
+					text: topInfo.key
+				})]
+			}));
+
+			board.children.push(gui.rect({
+				origin: RIGHT, align: RIGHT,
+				y: y,
+				width: statWidth,
+				height: lineHeight,
+				color: color,
+				children: [text({
+					z: -1,
+					align: CENTER,
+					origin: CENTER,
+					text: '§e' + topInfo.value
+				})]
+			}));
+		}
 	}
+
+	updateData(topData);
 
 	function updateCulling(): void {
 		for (let lineWrapper of board.children) {
@@ -156,7 +263,7 @@ import { text, rect } from './api/gui';
 	var scroll = 0;
 
 	Events.on(plugin, 'game_loop', (event) => {
-		var dwheel = Mouse.getDWheel() / 10;
+		var dwheel = Math.round(Mouse.getDWheel() / 10 / lineHeight) * lineHeight;
 		if (dwheel) {
 			scroll += dwheel;
 	        board.y.transit(scroll, 400, easing.outQuint);
@@ -184,10 +291,19 @@ import { text, rect } from './api/gui';
         GL11.glScalef(1, -1, -1);
 		
 		updateCulling();
+
+
+        // GL11.glDepthFunc(GL11.GL_LESS);
 		entity.render(JavaSystem.currentTimeMillis(), 16, 16);
+        // GL11.glDepthFunc(GL11.GL_LEQUAL);
 
 		GL11.glPopMatrix();
 
+	});
+
+	PluginMessages.on(plugin, 'brawlstars', (b: ByteBuf) => {
+		Events.off(plugin);
+		PluginMessages.off(plugin);
 	});
 
 

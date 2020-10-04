@@ -116,6 +116,9 @@ declare class GL11 {
     static GL_AMBIENT: number;
     static GL_SPECULAR: number;
     static GL_LIGHT_MODEL_AMBIENT: number;
+    static GL_LESS: number;
+    static GL_EQUAL: number;
+    static GL_LEQUAL: number;
 
     static glTranslatef(x: number, y: number, z: number): void;
 
@@ -132,6 +135,8 @@ declare class GL11 {
     static glLight(par1: number, par2: number, buffer: FloatBuffer): void;
 
     static glLightModel(par1: number, buffer: FloatBuffer): void;
+
+    static glDepthFunc(func: number): void;
 
     // static glDisableLighting(): void;
 
