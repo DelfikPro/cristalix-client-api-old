@@ -38,8 +38,8 @@ type TopEntry = {
 
     // Будет удалено
 	PluginMessages.on(plugin, 'museum:top', (buf: ByteBuf) => {
-	    let s = JSON.parse(UtilNetty.readString(buf, 65535)).EXPERIENCE
-        updateData(s as TopEntry[])
+	    let data = JSON.parse(UtilNetty.readString(buf, 65535)).EXPERIENCE
+        updateData(data as TopEntry[])
 	})
 
 	// Ширина всей таблицы
@@ -245,6 +245,7 @@ type TopEntry = {
 				})]
 			}));
 		}
+		updateCulling();
 	}
 
 	updateData(topData);
@@ -262,13 +263,12 @@ type TopEntry = {
 
 	let scroll = 0;
 
-	Events.on(plugin, 'game_loop', (event) => {
+	Events.on(plugin, 'game_loop', () => {
 		let dwheel = Math.round(Mouse.getDWheel() / 10 / lineHeight) * lineHeight;
 		if (dwheel) {
 			scroll += dwheel;
 	        board.y.transit(scroll, 400, easing.outQuint);
 		}
-		
 	});
 
 	Events.on(plugin, 'render_pass_ticks', (event: RenderPassEvent) => {
