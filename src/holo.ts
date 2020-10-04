@@ -1,8 +1,7 @@
 /// <reference path="./api/d.ts" />
 import * as easing from './api/easing';
 import * as gui from './api/gui';
-import * as vecmath from './api/vecmath';
-import { text, rect } from './api/gui';
+import {rect, text} from './api/gui';
 
 type TopEntry = {
 
@@ -12,7 +11,6 @@ type TopEntry = {
 };
 
 (function(plugin: any) {
-
 	gui.register(plugin);
 
 	const CENTER = {x: 0.5, y: 0.5};
@@ -38,6 +36,12 @@ type TopEntry = {
 		{key: 'Test', value: 1},
 	]
 
+    // Будет удалено
+	PluginMessages.on(plugin, 'museum:top', (buf: ByteBuf) => {
+	    let s = JSON.parse(UtilNetty.readString(buf, 65535)).EXPERIENCE
+        updateData(s as TopEntry[])
+	})
+
 	// Ширина всей таблицы
 	var boardWidth = 200;
 
@@ -48,26 +52,26 @@ type TopEntry = {
 	var lineHeight = 9;
 	
 	// Количество больших квадратов
-	var squares = 3;
+	let squares = 3;
 
 	// Размеры большого квадрата
-	var offset = (boardWidth - spacing * (squares - 1)) / squares;
+	let offset = (boardWidth - spacing * (squares - 1)) / squares;
 
 	// Цвет ячеек
-	var color = {a: 0.5, r: 0, g: 0, b: 0};
+	let color = {a: 0.5, r: 0, g: 0, b: 0};
 
 	// Ширина ячеек для номера места (#1 #2 #3)
-	var indexWidth = 14;
+	let indexWidth = 14;
 
 	// Ширина ячеек для статистики
-	var statWidth = 30;
+	let statWidth = 30;
 
-	var board = gui.rect({
+	let board = gui.rect({
 		width: boardWidth,
 		origin: {x: 0.5, y: 0}
 	});
 
-	var entity = gui.rect({
+	let entity = gui.rect({
 
 		scale: 0.0625 * 0.5,
 		children: [
@@ -89,7 +93,6 @@ type TopEntry = {
 				origin: BOTTOM,
 				align: TOP,
 			}),
-
 			text({
 				x: -0.5,
 				y: -offset / 2 - 2 - 0.5,
@@ -99,7 +102,6 @@ type TopEntry = {
 				origin: BOTTOM,
 				align: TOP,
 			}),
-
 			text({
 				x: 0.5,
 				y: -offset / 2 - 2 - 0.5,
@@ -109,7 +111,6 @@ type TopEntry = {
 				origin: BOTTOM,
 				align: TOP,
 			}),
-
 			text({
 				x: 0.5,
 				y: -offset / 2 - 2 + 0.5,
@@ -120,15 +121,15 @@ type TopEntry = {
 				align: TOP,
 			})
 		],
-
 	});
 
 	function updateData(topData: TopEntry[]): void {
+        board.children = [];
 
-		var place = 0;
+		let place = 0;
 
 		// Большие квадраты для самых лучших игроков
-		for (var i = 0; i < squares && topData; i++) {
+		for (let i = 0; i < squares && topData; i++) {
 			place++;
 			let topInfo = topData.shift();
 			if (!topInfo) break;
@@ -144,7 +145,6 @@ type TopEntry = {
 					color: {a: 0, r: 0, g: 0, b: 0},
 					origin: CENTER,
 					align: CENTER,
-					// scale: i == 1 ? 1 : 0.9,
 					children: [
 						rect({
 							color: color,
@@ -182,7 +182,7 @@ type TopEntry = {
 						}),
 					]
 				})]
-					
+					// Тот квадратик, тот что под головой - пустое место
 					// rect({
 					// 	color: color,
 					// 	width: offset,
@@ -193,7 +193,7 @@ type TopEntry = {
 		}
 
 		// Простые тонкие строчки
-		var smallLineIndex = 0;
+		let smallLineIndex = 0;
 		while (topData && place < 100) {
 			place++;
 			let topInfo = topData.shift();
@@ -260,10 +260,10 @@ type TopEntry = {
 		}
 	}
 
-	var scroll = 0;
+	let scroll = 0;
 
 	Events.on(plugin, 'game_loop', (event) => {
-		var dwheel = Math.round(Mouse.getDWheel() / 10 / lineHeight) * lineHeight;
+		let dwheel = Math.round(Mouse.getDWheel() / 10 / lineHeight) * lineHeight;
 		if (dwheel) {
 			scroll += dwheel;
 	        board.y.transit(scroll, 400, easing.outQuint);
@@ -272,16 +272,13 @@ type TopEntry = {
 	});
 
 	Events.on(plugin, 'render_pass_ticks', (event: RenderPassEvent) => {
-		
-        let screenState = gui.getScreenState();
-
         GL11.glPushMatrix();
 
-        var holoX = 5;
-        var holoY = 98;
-        var holoZ = 0;
+        let holoX = 5;
+        let holoY = 98;
+        let holoZ = 0;
 
-        var t = event.partialTicks;
+        let t = event.partialTicks;
 
         GL11.glTranslatef(
         	holoX - Player.getPosX() - (Player.getPosX() - Player.getPrevX()) * t, 
@@ -289,7 +286,8 @@ type TopEntry = {
         	holoZ - Player.getPosZ() - (Player.getPosZ() - Player.getPrevZ()) * t
         );
         GL11.glScalef(1, -1, -1);
-		
+        // Относительный поворот
+		GL11.glRotatef(90, 0, 1, 0);
 		updateCulling();
 
 
@@ -300,12 +298,4 @@ type TopEntry = {
 		GL11.glPopMatrix();
 
 	});
-
-	PluginMessages.on(plugin, 'brawlstars', (b: ByteBuf) => {
-		Events.off(plugin);
-		PluginMessages.off(plugin);
-	});
-
-
-
 })(plugin);
