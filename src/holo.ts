@@ -82,7 +82,6 @@ type TopEntry = {
 			this.squares = data.squares || 3;
 			this.indexWidth = data.indexWidth || 14;
 			this.statWidth = data.statWidth || 30;
-			ChatExtensions.printChatMessage(this.boardWidth + " " + this.spacing + " " + this.lineHeight + " " + this.squares + " " + this.indexWidth + " " + this.statWidth)
 			this.color = data.color || {a: 0.5, r: 0, g: 0, b: 0};
 			this.offset = (this.boardWidth - this.spacing * (this.squares - 1)) / this.squares;
 			
@@ -247,7 +246,6 @@ type TopEntry = {
 				while (topData && place < 100) {
 					place++;
 					let topInfo = topData.shift();
-					ChatExtensions.printChatMessage('§eplace: §f' + place + '§e, topInfo: §f' + topInfo + '§e, topData.length: §f' + topData.length)
 					if (!topInfo) break;
 			 
 					let ty = (smallLineIndex + 0.5) * (this.lineHeight + this.spacing) + (this.offset + this.spacing) / 2;
@@ -323,6 +321,7 @@ type TopEntry = {
 		let dwheel = Mouse.getDWheel();
 		for (let top of tops) {
 			let dscroll = Math.round(dwheel / 10 / top.lineHeight) * top.lineHeight;
+			ChatExtensions.printChatMessage("§eScroll of " + top.address + ": §f" + dscroll + " " + dwheel + " " + top.lineHeight + " " + top.scroll);
 			if (dscroll) {
 				top.scroll += dscroll;
 		        top.board.y.transit(top.scroll, 400, easing.outQuint);
