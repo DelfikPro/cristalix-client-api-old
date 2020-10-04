@@ -72,7 +72,7 @@ type TopEntry = {
 		readonly board: gui.Box;
 		readonly entity: gui.Box;
 
-		scroll: number;
+		scroll: number = 0;
 
 
 		constructor(readonly address: string, data: TopData) {
@@ -321,7 +321,6 @@ type TopEntry = {
 		let dwheel = Mouse.getDWheel();
 		for (let top of tops) {
 			let dscroll = Math.round(dwheel / 10 / top.lineHeight) * top.lineHeight;
-			ChatExtensions.printChatMessage("§eScroll of " + top.address + ": §f" + dscroll + " " + dwheel + " " + top.lineHeight + " " + top.scroll);
 			if (dscroll) {
 				top.scroll += dscroll;
 		        top.board.y.transit(top.scroll, 400, easing.outQuint);
