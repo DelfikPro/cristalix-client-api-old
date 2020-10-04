@@ -107,7 +107,7 @@ type TopEntry = {
 					text({
 						y: -this.offset / 2 - 2,
 						z: -0.1,
-						text: '§6' + this.title,
+						text: '§6§l' + this.title,
 						scale: 2,
 						origin: BOTTOM,
 						align: TOP,
