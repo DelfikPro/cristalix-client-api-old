@@ -336,7 +336,9 @@ type TopEntry = {
 
 
 	PluginMessages.on(plugin, 'museum:top-update', (buf: ByteBuf) => {
-		let data = JSON.parse(UtilNetty.readString(buf, 16777215));
+		let str = UtilNetty.readString(buf, 16777215);
+		ChatExtensions.printChatMessage(str);
+		let data = JSON.parse(str);
 		for (let key in data) {
 			for (let top of tops) {
 				if (top.address == key) top.updateData(data[key])

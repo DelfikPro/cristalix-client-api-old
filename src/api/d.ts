@@ -290,6 +290,8 @@ declare class ChatExtensions {
 
     static sendChatMessage(message: string): void;
 
+    static printChatMessage(message: string): void;
+
 }
 
 declare type GameType = 'NOT_SET' | 'SURVIVAL' | 'CREATIVE' | 'ADVENTURE' | 'SPECTATOR';
