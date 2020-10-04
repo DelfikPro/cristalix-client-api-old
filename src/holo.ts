@@ -75,7 +75,7 @@ type TopEntry = {
 		scroll: number;
 
 
-		constructor(data: TopData) {
+		constructor(readonly address: string, data: TopData) {
 			this.boardWidth = data.boardWidth || 200;
 			this.spacing = data.spacing || 1;
 			this.lineHeight = data.lineHeight || 9;
@@ -315,12 +315,11 @@ type TopEntry = {
 
 	}
 
-	let tops: Record<string, Top> = {};
+	let tops: Top[] = [];
 
 	Events.on(plugin, 'game_loop', () => {
 		let dwheel = Mouse.getDWheel();
-		for (let topAddress in tops) {
-			let top: Top = tops[topAddress];
+		for (let top of tops) {
 			let dscroll = Math.round(dwheel / 10 / top.lineHeight) * top.lineHeight;
 			if (dscroll) {
 				top.scroll += dscroll;
@@ -330,22 +329,26 @@ type TopEntry = {
 	});
 
 	Events.on(plugin, 'render_pass_ticks', (event: RenderPassEvent) => {
-        for (let topAddress in tops) {
-        	tops[topAddress].render(event.partialTicks);
+		for (let top of tops) {
+        	top.render(event.partialTicks);
         }
 	});
 
 
-	PluginMessages.on(plugin, 'tops:update', (buf: ByteBuf) => {
+	PluginMessages.on(plugin, 'museum:top-update', (buf: ByteBuf) => {
 		let data = JSON.parse(UtilNetty.readString(buf, 16777215));
-		for (let key in data) 
-			tops[key].updateData(data[key]);
+		for (let key in data) {
+			for (let top of tops) {
+				if (top.address == key) top.updateData(data[key])
+			}
+		}
 	});
 
-	PluginMessages.on(plugin, 'tops:create', (buf: ByteBuf) => {
+	PluginMessages.on(plugin, 'museum:top-create', (buf: ByteBuf) => {
 		let data = JSON.parse(UtilNetty.readString(buf, 16777215));
-		for (let key in data) 
-			tops[key] = new Top(data[key]);
+		for (let key in data) {
+			tops.push(new Top(key, data[key]));
+		}
 	});
 
 
