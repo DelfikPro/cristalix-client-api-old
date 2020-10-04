@@ -13,6 +13,13 @@ type TopEntry = {
 (function(plugin: any) {
 	gui.register(plugin);
 
+	const pushMatrix = GL11.glPushMatrix;
+	const popMatrix = GL11.glPopMatrix;
+	const translate = GL11.glTranslatef;
+	const rotate = GL11.glRotatef;
+	const scale = GL11.glScalef;
+	const depthMask = GL11.glDepthMask;
+
 	const CENTER = {x: 0.5, y: 0.5};
 	const LEFT = {x: 0, y: 0.5};
 	const RIGHT = {x: 1, y: 0.5};
@@ -105,6 +112,42 @@ type TopEntry = {
 				children: [
 					this.board,
 					text({
+						x: -0.5,
+						y: -this.offset / 2 - 2 + 0.5,
+						z: -0.05,
+						text: '¨222200§l' + this.title,
+						scale: 2,
+						origin: BOTTOM,
+						align: TOP,
+					}),
+					text({
+						x: -0.5,
+						y: -this.offset / 2 - 2 - 0.5,
+						z: -0.05,
+						text: '¨222200§l' + this.title,
+						scale: 2,
+						origin: BOTTOM,
+						align: TOP,
+					}),
+					text({
+						x: 0.5,
+						y: -this.offset / 2 - 2 - 0.5,
+						z: -0.05,
+						text: '¨222200§l' + this.title,
+						scale: 2,
+						origin: BOTTOM,
+						align: TOP,
+					}),
+					text({
+						x: 0.5,
+						y: -this.offset / 2 - 2 + 0.5,
+						z: -0.05,
+						text: '¨222200§l' + this.title,
+						scale: 2,
+						origin: BOTTOM,
+						align: TOP,
+					}),
+					text({
 						y: -this.offset / 2 - 2,
 						z: -0.1,
 						text: '§6§l' + this.title,
@@ -112,67 +155,37 @@ type TopEntry = {
 						origin: BOTTOM,
 						align: TOP,
 					}),
-					text({
-						x: -0.5,
-						y: -this.offset / 2 - 2 + 0.5,
-						z: -0.05,
-						text: '¨222200§l' + this.title,
-						scale: 2,
-						origin: BOTTOM,
-						align: TOP,
-					}),
-					text({
-						x: -0.5,
-						y: -this.offset / 2 - 2 - 0.5,
-						z: -0.05,
-						text: '¨222200§l' + this.title,
-						scale: 2,
-						origin: BOTTOM,
-						align: TOP,
-					}),
-					text({
-						x: 0.5,
-						y: -this.offset / 2 - 2 - 0.5,
-						z: -0.05,
-						text: '¨222200§l' + this.title,
-						scale: 2,
-						origin: BOTTOM,
-						align: TOP,
-					}),
-					text({
-						x: 0.5,
-						y: -this.offset / 2 - 2 + 0.5,
-						z: -0.05,
-						text: '¨222200§l' + this.title,
-						scale: 2,
-						origin: BOTTOM,
-						align: TOP,
-					})
 				],
 			});
 		}
 
 
 		render(partialTicks: number): void {
-			GL11.glPushMatrix();
+			pushMatrix();
 
+	        depthMask(false);
 
-	        GL11.glTranslatef(
+	        translate(
 	        	this.x - Player.getPosX() - (Player.getPosX() - Player.getPrevX()) * partialTicks, 
 	        	this.y - Player.getPosY() - (Player.getPosY() - Player.getPrevY()) * partialTicks, 
 	        	this.z - Player.getPosZ() - (Player.getPosZ() - Player.getPrevZ()) * partialTicks
 	        );
-	        GL11.glScalef(1, -1, -1);
+	        scale(1, -1, -1);
 	        // Относительный поворот
-			GL11.glRotatef(this.yaw, 0, 1, 0);
+			rotate(this.yaw, 0, 1, 0);
 			this.updateCulling();
 
 
 	        // GL11.glDepthFunc(GL11.GL_LESS);
+	        gui.Hz.i = 0;
+
 			this.entity.render(JavaSystem.currentTimeMillis(), 16, 16);
+
 	        // GL11.glDepthFunc(GL11.GL_LEQUAL);
 
-			GL11.glPopMatrix();
+	        depthMask(true);
+
+			popMatrix();
 
 
 		}
@@ -208,6 +221,7 @@ type TopEntry = {
 										z: -1,
 										text: '#' + place,
 										origin: CENTER, align: CENTER,
+										autoFit: true,
 									})]
 								}),
 								rect({
@@ -220,6 +234,7 @@ type TopEntry = {
 										z: -1,
 										text: topInfo.key,
 										origin: CENTER, align: CENTER,
+										autoFit: true,
 									})]
 								}),
 								rect({
@@ -230,8 +245,9 @@ type TopEntry = {
 									width: this.offset,
 									children: [text({
 										z: -1,
-										text: '§e' + topInfo.value,
+										text: '§e' + Math.round(topInfo.value),
 										origin: CENTER, align: CENTER,
+										autoFit: true,
 									})]
 								}),
 							]
@@ -266,7 +282,8 @@ type TopEntry = {
 							z: -1,
 							align: CENTER,
 							origin: CENTER,
-							text: '#' + place
+							text: '#' + place,
+							autoFit: true,
 						})]
 					}));
 
@@ -281,7 +298,8 @@ type TopEntry = {
 							z: -1,
 							align: CENTER,
 							origin: CENTER,
-							text: topInfo.key
+							text: topInfo.key,
+							autoFit: true,
 						})]
 					}));
 
@@ -295,7 +313,8 @@ type TopEntry = {
 							z: -1,
 							align: CENTER,
 							origin: CENTER,
-							text: '§e' + topInfo.value
+							text: '§e' + (topInfo.value ? Math.round(topInfo.value * 10) / 10 : 0),
+							autoFit: true,
 						})]
 					}));
 				}
@@ -307,7 +326,7 @@ type TopEntry = {
 
 			isVisible(line: gui.Element): boolean {
 				let y = line.y.value + this.board.y.value;
-				return y > 0 && y < 100;
+				return y >= 0 && y < 100;
 			}
 
 			updateCulling(): void {
@@ -322,13 +341,16 @@ type TopEntry = {
 
 	let tops: Top[] = [];
 
-	Events.on(plugin, 'game_loop', () => {
+	Events.on(plugin, 'game_tick_pre', () => {
 		let dwheel = Mouse.getDWheel();
 		for (let top of tops) {
-			let dscroll = dwheel / 10;
+			let dscroll = dwheel / 10.0;
 			if (dscroll) {
 				top.scroll += dscroll;
-		        top.board.y.transit(top.scroll, 400, easing.outQuint);
+		        if (top.board.y.toValue != top.scroll) top.board.y.transit(top.scroll, 400, easing.outQuint);
+				if (top.scroll > 0) top.scroll = 0;
+				let maxY = -top.board.children[top.board.children.length - 1].y.value + top.lineHeight * 10;
+				if (top.scroll < maxY) top.scroll = maxY;
 			}
 		}
 	});
@@ -342,6 +364,7 @@ type TopEntry = {
 
 	PluginMessages.on(plugin, 'museum:top-update', (buf: ByteBuf) => {
 		let str = UtilNetty.readString(buf, 16777215);
+		ChatExtensions.printChatMessage(str);
 		let data = JSON.parse(str);
 		for (let key in data) {
 			for (let top of tops) {
@@ -353,7 +376,9 @@ type TopEntry = {
 	});
 
 	PluginMessages.on(plugin, 'museum:top-create', (buf: ByteBuf) => {
-		let data = JSON.parse(UtilNetty.readString(buf, 16777215));
+		let str = UtilNetty.readString(buf, 16777215);
+		ChatExtensions.printChatMessage(str);
+		let data = JSON.parse(str);
 		for (let key in data) {
 			tops.push(new Top(key, data[key]));
 		}

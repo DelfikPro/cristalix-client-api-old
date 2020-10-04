@@ -119,8 +119,11 @@ declare class GL11 {
     static GL_LESS: number;
     static GL_EQUAL: number;
     static GL_LEQUAL: number;
+    static GL_POLYGON_OFFSET_FILL: number;
 
     static glTranslatef(x: number, y: number, z: number): void;
+
+    static glPolygonOffset(factor: number, units: number): void;
 
     static glScalef(x: number, y: number, z: number): void;
 
@@ -132,11 +135,17 @@ declare class GL11 {
 
     static glPopMatrix(): void;
 
+    static glEnable(property: number): void;
+
+    static glDisable(property: number): void;
+
     static glLight(par1: number, par2: number, buffer: FloatBuffer): void;
 
     static glLightModel(par1: number, buffer: FloatBuffer): void;
 
     static glDepthFunc(func: number): void;
+
+    static glDepthMask(enabled: boolean): void;
 
     // static glDisableLighting(): void;
 

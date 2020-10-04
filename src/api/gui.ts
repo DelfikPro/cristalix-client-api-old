@@ -5,6 +5,14 @@ import * as vecmath from './vecmath';
 // import * as renderhelper from './renderhelper';
 
 
+const pushMatrix = GL11.glPushMatrix;
+const popMatrix = GL11.glPopMatrix;
+const translate = GL11.glTranslatef;
+const rotate = GL11.glRotatef;
+const scale = GL11.glScalef;
+const depthMask = GL11.glDepthMask;
+const color = GL11.glColor4f;
+
 
 export type Callback = () => void;
 
@@ -34,7 +42,7 @@ export class Animatable {
 
     public update(time: number) : void {
         if (!this.started) return;
-        let part = (time - this.started) * 1.0 / this.duration;
+        let part = (time - this.started) / this.duration;
         if (part > 1.0) {
             this.value = this.toValue;
             this.started = 0.0;
@@ -117,6 +125,7 @@ export type ItemData = {
 export type TextData = {
     readonly text?: string;
     readonly shadow?: boolean;
+    readonly autoFit?: boolean;
 } & ElementData
 
 
@@ -205,23 +214,35 @@ export abstract class Element {
     public prepare(time: number, parentWidth: number, parentHeight: number, elementWidth: number, elementHeight: number): void {
         if (!this.enabled) return;
         
-        for (let element of this.animatables) 
-            element.update(time);
+        var animatables = this.animatables;
+        for (var i = 0; i < animatables.length; i++) {
+            var animatable = animatables[i];
+            if (animatable.started) {
+                animatable.update(time);
+                Hz.i++;
+            }
+        }
 
 
-        GL11.glTranslatef(parentWidth * this.alignX.value, parentHeight * this.alignY.value, 0)
-        if (this.rotationX.value) GL11.glRotatef(this.rotationX.value, 1, 0, 0);
-        if (this.rotationY.value) GL11.glRotatef(this.rotationY.value, 0, 1, 0);
-        if (this.rotationZ.value) GL11.glRotatef(this.rotationZ.value, 0, 0, 1);
-        GL11.glTranslatef(this.x.value, this.y.value, this.z.value);
-        GL11.glScalef(this.scale.value, this.scale.value, this.scale.value);
-        GL11.glTranslatef(-elementWidth * this.originX.value, -elementHeight * this.originY.value, 0);
+        if (this.alignX.value || this.alignY.value) translate(parentWidth * this.alignX.value, parentHeight * this.alignY.value, 0)
+        if (this.rotationX.value) rotate(this.rotationX.value, 1, 0, 0);
+        if (this.rotationY.value) rotate(this.rotationY.value, 0, 1, 0);
+        if (this.rotationZ.value) rotate(this.rotationZ.value, 0, 0, 1);
+        if (this.x.value || this.y.value || this.z.value) translate(this.x.value, this.y.value, 0/*this.z.value*/);
+        if (this.scale.value != 1) scale(this.scale.value, this.scale.value, this.scale.value);
+        if (this.originX.value || this.originY.value) translate(-elementWidth * this.originX.value, -elementHeight * this.originY.value, 0);
         this.lastColor = colorParts2Hex(this.a.value, this.r.value, this.g.value, this.b.value);
     }
 
     public abstract render(time: number, parentWidth: number, parentHeight: number): void;
 
     public abstract checkHovered(screenState: ScreenState, parentWidth: number, parentHeight: number): void;
+
+}
+
+export class Hz {
+
+    static i: number;
 
 }
 
@@ -232,12 +253,14 @@ export function text(data: TextData): Text {
 export class Text extends Element {
 
     text: string;
+    autoFit: boolean;
     shadow: boolean;
 
     constructor(data: TextData) {
         super(data);
         this.text = data.text || "";
         this.shadow = !!data.shadow;
+        this.autoFit = !!data.autoFit;
     }
 
     render(time: number, parentWidth: number, parentHeight: number): void {
@@ -246,13 +269,22 @@ export class Text extends Element {
         let textWidth = Draw.getStringWidth(this.text);
         let textHeight = 9;
 
-        GL11.glPushMatrix();
+        if (textWidth && this.autoFit) {
+            let factor = (parentWidth - 2) / textWidth;
+            if (factor < 1) this.scale.value = factor;
+        }
+
+        pushMatrix();
         super.prepare(time, parentWidth, parentHeight, textWidth, textHeight);
         
+        // GL11.glDepthFunc(GL11.GL_LESS);
         // GlStateManager.disableDepth();
-        Draw.drawString(this.text, 0, 0, -1, this.shadow);
+
+        if (this.scale.value) Draw.drawString(this.text, 0, 0, -1, this.shadow);
+
+        // GL11.glDepthFunc(GL11.GL_LEQUAL);
         // GlStateManager.enableDepth();
-        GL11.glPopMatrix();
+        popMatrix();
 
     }
 
@@ -297,23 +329,22 @@ export class Box extends Element {
         let width = this.width.value;
         let height = this.height.value;
 
-        GL11.glPushMatrix();
+        pushMatrix();
         super.prepare(time, parentWidth, parentHeight, width, height);
 
-
-        // GlStateManager.disableDepth();
-        if (this.texture) {
-            Textures.bindTexture(this.texture);
-            GL11.glColor4f(
-                this.a.value,
-                this.r.value,
-                this.g.value,
-                this.b.value
-            );
-            Draw.drawScaledCustomSizeModalRect(0, 0, 0, 0, 1, 1, width, height, 1, 1);
+        if (this.scale.value) {
+            if (this.texture) {
+                Textures.bindTexture(this.texture);
+                color(
+                    this.a.value,
+                    this.r.value,
+                    this.g.value,
+                    this.b.value
+                );
+                Draw.drawScaledCustomSizeModalRect(0, 0, 0, 0, 1, 1, width, height, 1, 1);
+            }
+            else Draw.drawRect(0, 0, width, height, this.lastColor);
         }
-        else Draw.drawRect(0, 0, width, height, this.lastColor);
-        // GlStateManager.enableDepth();
 
         for (var i = 0; i < this.children.length; i++) {
             this.children[i].render(time, width, height);
@@ -321,7 +352,7 @@ export class Box extends Element {
         // for (let child of this.children) 
         //     child.render(time, width, height);
 
-        GL11.glPopMatrix();
+        popMatrix();
 
     }
 
@@ -393,13 +424,13 @@ export class Item extends Element {
     render(time: number, parentWidth: number, parentHeight: number): void {
         if (!this.enabled) return;
 
-        GL11.glPushMatrix();
+        pushMatrix();
         RenderHelper.enableGUIStandardItemLighting();
         // GL11.glTranslatef(0, 0, +100);
         super.prepare(time, parentWidth, parentHeight, 16, 16);
         Draw.renderItemAndEffectIntoGUI(this.item, this.x.value, this.y.value);
         RenderHelper.disableStandardItemLighting();
-        GL11.glPopMatrix();
+        popMatrix();
 
     }
 
@@ -445,12 +476,12 @@ export function register(listener: any) {
 
         let screenState = getScreenState();
 
-        GL11.glTranslatef(0, 0, +zIndex);
+        translate(0, 0, +zIndex);
 
         for (let element of overlay)
             element.render(screenState.time, screenState.width, screenState.height);
 
-        GL11.glTranslatef(0, 0, -zIndex);
+        translate(0, 0, -zIndex);
 
     });
 
