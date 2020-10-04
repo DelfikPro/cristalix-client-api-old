@@ -246,6 +246,7 @@ type TopEntry = {
 				while (topData && place < 100) {
 					place++;
 					let topInfo = topData.shift();
+					ChatExtensions.printChatMessage('§eplace: §f' + place + '§e, topInfo: §f' + topInfo + '§e, topData.length: §f' + topData.length)
 					if (!topInfo) break;
 			 
 					let y = (smallLineIndex + 0.5) * (this.lineHeight + this.spacing) + (this.offset + this.spacing) / 2;
@@ -295,9 +296,9 @@ type TopEntry = {
 					}));
 				}
 
-				for (let child of this.board.children) {
-					if (!this.isVisible(child)) child.scale.value = 0;
-				}
+				// for (let child of this.board.children) {
+				// 	if (!this.isVisible(child)) child.scale.value = 0;
+				// }
 			}
 
 			isVisible(line: gui.Element): boolean {
@@ -306,10 +307,10 @@ type TopEntry = {
 			}
 
 			updateCulling(): void {
-				for (let lineWrapper of this.board.children) {
-					let scale = this.isVisible(lineWrapper) ? 1 : 0;
-					if (lineWrapper.scale.toValue != scale) lineWrapper.scale.transit(scale, 250, easing.none);
-				}
+				// for (let lineWrapper of this.board.children) {
+				// 	let scale = this.isVisible(lineWrapper) ? 1 : 0;
+				// 	if (lineWrapper.scale.toValue != scale) lineWrapper.scale.transit(scale, 250, easing.none);
+				// }
 			}
 
 
