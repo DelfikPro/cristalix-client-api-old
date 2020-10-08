@@ -65,8 +65,6 @@ import {rect, text} from './api/gui';
 
 	PluginMessages.on(plugin, 'amongus:notify', (b) => {
 
-		ChatExtensions.sendChatMessage("Шото пришло: " + b);
-
 		let address = UtilNetty.readString(b, 65535);
 		let x = b.readInt();
 		let y = b.readInt();
