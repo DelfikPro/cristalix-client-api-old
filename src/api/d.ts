@@ -120,6 +120,22 @@ declare class GL11 {
     static GL_EQUAL: number;
     static GL_LEQUAL: number;
     static GL_POLYGON_OFFSET_FILL: number;
+    static GL_ZERO: number;
+    static GL_ONE: number;
+    static GL_SRC_COLOR: number;
+    static GL_ONE_MINUS_SRC_COLOR: number;
+    static GL_DST_COLOR: number;
+    static GL_ONE_MINUS_DST_COLOR: number;
+    static GL_SRC_ALPHA: number;
+    static GL_ONE_MINUS_SRC_ALPHA: number;
+    static GL_DST_ALPHA: number;
+    static GL_ONE_MINUS_DST_ALPHA: number;
+    static GL_CONSTANT_COLOR: number;
+    static GL_ONE_MINUS_CONSTANT_COLOR: number;
+    static GL_CONSTANT_ALPHA: number;
+    static GL_ONE_MINUS_CONSTANT_ALPHA: number;
+    static GL_COLOR_BUFFER_BIT: number;
+
 
     static glTranslatef(x: number, y: number, z: number): void;
 
@@ -135,6 +151,10 @@ declare class GL11 {
 
     static glPopMatrix(): void;
 
+    static glPushAttrib(attrib: number): void;
+
+    static glPopAttrib(): void;
+
     static glEnable(property: number): void;
 
     static glDisable(property: number): void;
@@ -147,9 +167,17 @@ declare class GL11 {
 
     static glDepthMask(enabled: boolean): void;
 
+    static glBlendFunc(srcFactor: number, dstFactor: number): void;
+
     // static glDisableLighting(): void;
 
     // static glEnableLighting(): void;
+
+}
+
+declare class GL12 {
+
+    static glBlendColor(r: number, g: number, b: number, a: number): void;
 
 }
 
@@ -221,32 +249,6 @@ declare class Draw {
     static renderItemAndEffectIntoGUI(item: ItemStack, x: number, y: number): void;
 
     static displayItemActivation(item: ItemStack): void;
-
-}
-
-declare class Entity {
-    
-    getEntityId(): number;
-
-    getName(): string;
-
-    hasCustomName(): boolean;
-
-    getCustomNameTag(): string;
-
-    getAlwaysRenderNameTag(): boolean;
-
-    getX(): number;
-
-    getY(): number;
-
-    getZ(): number;
-
-    getPrevX(): number;
-    
-    getPrevY(): number;
-
-    getPrevZ(): number;
 
 }
 
@@ -598,4 +600,81 @@ declare class World {
     static getTime(): number | 0;
 
     static getTotalTime(): number | 0;
+}
+
+declare class Minecraft {
+
+    getPlayer(): EntityPlayerSP;
+
+}
+
+declare const minecraft: Minecraft;
+
+declare class EntityPlayerSP extends EntityPlayer {
+
+}
+
+declare class EntityPlayer extends EntityLivingBase {
+    
+}
+
+declare class EntityLivingBase extends Entity {
+    
+
+    getHealth(): number;
+
+    getMaxHealth(): number;
+
+}
+
+declare class Entity {
+
+    getEntityId(): number;
+
+    // getUniqueID(): UUID;
+
+    // getDisplayName(): ITextComponent;
+
+    getName(): string;
+
+    hasCustomName(): boolean;
+
+    getCustomNameTag(): string;
+
+    getAlwaysRenderNameTag(): boolean;
+
+    getLastX(): number;
+
+    getPrevX(): number;
+
+    getX(): number;
+
+    getLastY(): number;
+
+    getPrevY(): number;
+
+    getY(): number;
+
+    getLastZ(): number;
+
+    getPrevZ(): number;
+
+    getZ(): number;
+
+    getRotationYaw(): number;
+
+    getRotationPitch(): number;
+
+    getPrevRotationYaw(): number;
+
+    getPrevRotationPitch(): number;
+
+    getMotionX(): number;
+
+    getMotionY(): number;
+
+    getMonitionZ(): number;
+
+    isOnGround(): boolean;
+
 }

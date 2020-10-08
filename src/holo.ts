@@ -1,7 +1,6 @@
 /// <reference path="./api/d.ts" />
 import * as easing from './api/easing';
 import * as gui from './api/gui';
-import {rect, text} from './api/gui';
 
 type TopEntry = {
 
@@ -102,7 +101,7 @@ type TopEntry = {
 			this.z = data.z;
 			this.yaw = data.yaw || 0;
 
-			this.board = rect({
+			this.board = gui.rect({
 				width: this.boardWidth,
 				origin: {x: 0.5, y: 0}
 			});
@@ -111,7 +110,7 @@ type TopEntry = {
 				scale: 0.0625 * 0.5,
 				children: [
 					this.board,
-					text({
+					gui.text({
 						x: -0.5,
 						y: -this.offset / 2 - 2 + 0.5,
 						z: -0.05,
@@ -120,7 +119,7 @@ type TopEntry = {
 						origin: BOTTOM,
 						align: TOP,
 					}),
-					text({
+					gui.text({
 						x: -0.5,
 						y: -this.offset / 2 - 2 - 0.5,
 						z: -0.05,
@@ -129,7 +128,7 @@ type TopEntry = {
 						origin: BOTTOM,
 						align: TOP,
 					}),
-					text({
+					gui.text({
 						x: 0.5,
 						y: -this.offset / 2 - 2 - 0.5,
 						z: -0.05,
@@ -138,7 +137,7 @@ type TopEntry = {
 						origin: BOTTOM,
 						align: TOP,
 					}),
-					text({
+					gui.text({
 						x: 0.5,
 						y: -this.offset / 2 - 2 + 0.5,
 						z: -0.05,
@@ -147,7 +146,7 @@ type TopEntry = {
 						origin: BOTTOM,
 						align: TOP,
 					}),
-					text({
+					gui.text({
 						y: -this.offset / 2 - 2,
 						z: -0.1,
 						text: '§6§l' + this.title,
@@ -206,44 +205,44 @@ type TopEntry = {
 						origin: {x: i * (1 / (this.squares - 1)), y: 0.5},
 						align: {x: i * (1 / (this.squares - 1)), y: 0.5},
 						color: {a: 0, r: 0, g: 0, b: 0},
-						children: [rect({
+						children: [gui.rect({
 							width: this.offset,
 							height: this.offset,
 							color: {a: 0, r: 0, g: 0, b: 0},
 							origin: CENTER,
 							align: CENTER,
 							children: [
-								rect({
+								gui.rect({
 									color: this.color,
 									height: this.lineHeight,
 									width: this.indexWidth,
-									children: [text({
+									children: [gui.text({
 										z: -1,
 										text: '#' + place,
 										origin: CENTER, align: CENTER,
 										autoFit: true,
 									})]
 								}),
-								rect({
+								gui.rect({
 									color: this.color,
 									height: this.lineHeight,
 									origin: TOP_RIGHT,
 									align: TOP_RIGHT,
 									width: this.offset - this.indexWidth - this.spacing,
-									children: [text({
+									children: [gui.text({
 										z: -1,
 										text: topInfo.key,
 										origin: CENTER, align: CENTER,
 										autoFit: true,
 									})]
 								}),
-								rect({
+								gui.rect({
 									color: this.color,
 									height: this.lineHeight,
 									origin: BOTTOM,
 									align: BOTTOM,
 									width: this.offset,
-									children: [text({
+									children: [gui.text({
 										z: -1,
 										text: '§e' + Math.round(topInfo.value),
 										origin: CENTER, align: CENTER,
@@ -278,7 +277,7 @@ type TopEntry = {
 						width: this.indexWidth,
 						height: this.lineHeight,
 						color: this.color,
-						children: [text({
+						children: [gui.text({
 							z: -1,
 							align: CENTER,
 							origin: CENTER,
@@ -294,7 +293,7 @@ type TopEntry = {
 						width: this.boardWidth - this.spacing * 2 - this.statWidth - this.indexWidth,
 						height: this.lineHeight,
 						color: this.color,
-						children: [text({
+						children: [gui.text({
 							z: -1,
 							align: CENTER,
 							origin: CENTER,
@@ -309,7 +308,7 @@ type TopEntry = {
 						width: this.statWidth,
 						height: this.lineHeight,
 						color: this.color,
-						children: [text({
+						children: [gui.text({
 							z: -1,
 							align: CENTER,
 							origin: CENTER,
