@@ -50,11 +50,6 @@ import {rect, text} from './api/gui';
 
 	});
 
-	PluginMessages.on(plugin, 'brawlstars', (b) => {
-		Events.off(plugin);
-		PluginMessages.off(plugin);
-	});
-
 	class Notify {
 		constructor(
 			readonly address: string,
@@ -66,15 +61,11 @@ import {rect, text} from './api/gui';
 	}
 
 	let notifies: Notify[] = [
-		// new Notify("test", new gui.Box({
-		// 	width: 16,
-		// 	height: 16,
-		// 	texture: 'minecraft:textures/others/znak_v_1.png',
-		// 	color: {a: 1, r: 1, g: 1, b: 1}
-		// }), 0, 100, 0)
 	];
 
 	PluginMessages.on(plugin, 'amongus:notify', (b) => {
+
+		ChatExtensions.sendChatMessage("Шото пришло: " + b);
 
 		let address = UtilNetty.readString(b, 65535);
 		let x = b.readInt();
@@ -89,18 +80,24 @@ import {rect, text} from './api/gui';
 			width: 16,
 			height: 16,
 			texture: UtilNetty.readString(b, 65535),
-			color: {a: 1, r: 1, g: 1, b: 1},
+			color: {a: 1, r: 1, g: 1, b: 1}, 
 		}), x, y, z));
 
 	});
 
-	PluginMessages.on(plugin, 'amoungus:hidenotify', (b) => {
+	PluginMessages.on(plugin, 'amongus:hide', (b) => {
 		let address = UtilNetty.readString(b, 65535);
 		let newNotifies = [];
 		for (let notify of notifies) {
 			if (notify.address != address) newNotifies.push(notify);
 		}
+		// ChatExtensions.sendChatMessage('Hiding ' + address + ': before ' + notifies.length + ", after: " + newNotifies.length);
 		notifies = newNotifies;
+	});
+
+	PluginMessages.on(plugin, 'brawlstars', (b) => {
+		Events.off(plugin);
+		PluginMessages.off(plugin);
 	});
 
 	Events.on(plugin, 'render_pass_ticks', (event: RenderPassEvent) => {
