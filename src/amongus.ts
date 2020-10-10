@@ -61,6 +61,11 @@ import {rect, text} from './api/gui';
 	}
 
 	let notifies: Notify[] = [
+		// new Notify("test", gui.rect({
+		// 	width: 16,
+		// 	height: 16,
+		// 	color: {a: 0, r: 1, g: 0.1, b: 0.1}
+		// }), 0, 20, 0)
 	];
 
 	PluginMessages.on(plugin, 'amongus:notify', (b) => {
@@ -119,7 +124,6 @@ import {rect, text} from './api/gui';
 			GL11.glTranslatef(8, 8, 8);
 			GL11.glPushAttrib(GL11.GL_COLOR_BUFFER_BIT);
 			GL11.glBlendFunc(GL11.GL_SRC_COLOR, GL11.GL_ONE_MINUS_DST_COLOR);
-			GL12.glBlendColor(1, 0, 0, 1);
 
 			GL11.glRotatef(player.getYaw() + 180, 0, 1, 0);
 			GL11.glRotatef(-player.getPitch(), 1, 0, 0);
