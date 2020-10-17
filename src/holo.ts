@@ -30,14 +30,14 @@ type TopEntry = {
 	const BOTTOM_LEFT = {x: 0, y: 1};
 
 	type TopData = {
-		boardWidth: number;
-		spacing: number;
-		lineHeight: number;
-		squares: number;
-		indexWidth: number;
-		statWidth: number;
-		title: string;
-		color: gui.Color;
+		boardWidth?: number;
+		spacing?: number;
+		lineHeight?: number;
+		squares?: number;
+		indexWidth?: number;
+		statWidth?: number;
+		title?: string;
+		color?: gui.Color;
 		x: number;
 		y: number;
 		z: number;
@@ -164,10 +164,12 @@ type TopEntry = {
 
 	        depthMask(false);
 
+	        let player = minecraft.getPlayer();
+
 	        translate(
-	        	this.x - Player.getPosX() - (Player.getPosX() - Player.getPrevX()) * partialTicks, 
-	        	this.y - Player.getPosY() - (Player.getPosY() - Player.getPrevY()) * partialTicks, 
-	        	this.z - Player.getPosZ() - (Player.getPosZ() - Player.getPrevZ()) * partialTicks
+	        	this.x - player.getLastX() - (player.getX() - player.getLastX()) * partialTicks, 
+	        	this.y - player.getLastY() - (player.getY() - player.getLastY()) * partialTicks, 
+	        	this.z - player.getLastZ() - (player.getZ() - player.getLastZ()) * partialTicks
 	        );
 	        scale(1, -1, -1);
 	        // Относительный поворот
@@ -338,7 +340,36 @@ type TopEntry = {
 
 	}
 
-	let tops: Top[] = [];
+	let testTop = new Top('test', {x: 0, y: 100, z: 0, yaw: 45});
+	let tops: Top[] = [
+	testTop
+	];
+	testTop.updateData([
+		{key: 'test' + Math.random() * 10000, value: Math.random() * 1000000},
+		{key: 'test' + Math.random() * 10000, value: Math.random() * 1000000},
+		{key: 'test' + Math.random() * 10000, value: Math.random() * 1000000},
+		{key: 'test' + Math.random() * 10000, value: Math.random() * 1000000},
+		{key: 'test' + Math.random() * 10000, value: Math.random() * 1000000},
+		{key: 'test' + Math.random() * 10000, value: Math.random() * 1000000},
+		{key: 'test' + Math.random() * 10000, value: Math.random() * 1000000},
+		{key: 'test' + Math.random() * 10000, value: Math.random() * 1000000},
+		{key: 'test' + Math.random() * 10000, value: Math.random() * 1000000},
+		{key: 'test' + Math.random() * 10000, value: Math.random() * 1000000},
+		{key: 'test' + Math.random() * 10000, value: Math.random() * 1000000},
+		{key: 'test' + Math.random() * 10000, value: Math.random() * 1000000},
+		{key: 'test' + Math.random() * 10000, value: Math.random() * 1000000},
+		{key: 'test' + Math.random() * 10000, value: Math.random() * 1000000},
+		{key: 'test' + Math.random() * 10000, value: Math.random() * 1000000},
+		{key: 'test' + Math.random() * 10000, value: Math.random() * 1000000},
+		{key: 'test' + Math.random() * 10000, value: Math.random() * 1000000},
+		{key: 'test' + Math.random() * 10000, value: Math.random() * 1000000},
+		{key: 'test' + Math.random() * 10000, value: Math.random() * 1000000},
+		{key: 'test' + Math.random() * 10000, value: Math.random() * 1000000},
+		{key: 'test' + Math.random() * 10000, value: Math.random() * 1000000},
+		{key: 'test' + Math.random() * 10000, value: Math.random() * 1000000},
+		{key: 'test' + Math.random() * 10000, value: Math.random() * 1000000},
+		{key: 'test' + Math.random() * 10000, value: Math.random() * 1000000},
+	]);
 
 	Events.on(plugin, 'game_tick_pre', () => {
 		let dwheel = Mouse.getDWheel();
@@ -361,7 +392,7 @@ type TopEntry = {
 	});
 
 
-	PluginMessages.on(plugin, 'museum:top-update', (buf: ByteBuf) => {
+	PluginMessages.on(plugin, 'top-update', (buf: ByteBuf) => {
 		let str = UtilNetty.readString(buf, 16777215);
 		ChatExtensions.printChatMessage(str);
 		let data = JSON.parse(str);
@@ -374,7 +405,7 @@ type TopEntry = {
 		}
 	});
 
-	PluginMessages.on(plugin, 'museum:top-create', (buf: ByteBuf) => {
+	PluginMessages.on(plugin, 'top-create', (buf: ByteBuf) => {
 		let str = UtilNetty.readString(buf, 16777215);
 		ChatExtensions.printChatMessage(str);
 		let data = JSON.parse(str);

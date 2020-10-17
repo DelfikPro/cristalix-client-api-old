@@ -29,6 +29,8 @@ declare class ByteBuf {
 
     readInt(): number;
 
+    readDouble(): number;
+
     readableBytes(): number;
 
     nioBuffer(): ByteBuffer;
@@ -135,6 +137,7 @@ declare class GL11 {
     static GL_CONSTANT_ALPHA: number;
     static GL_ONE_MINUS_CONSTANT_ALPHA: number;
     static GL_COLOR_BUFFER_BIT: number;
+    static GL_TEXTURE_2D: number;
 
 
     static glTranslatef(x: number, y: number, z: number): void;
@@ -169,6 +172,8 @@ declare class GL11 {
 
     static glBlendFunc(srcFactor: number, dstFactor: number): void;
 
+    static glBlendFunci(buf: number, srcFactor: number, dstFactor: number): void;
+
     // static glDisableLighting(): void;
 
     // static glEnableLighting(): void;
@@ -186,6 +191,16 @@ declare class GlStateManager {
     static disableLighting(): void;
 
     static enableLighting(): void;
+
+    static disableBlend(): void;
+
+    static enableBlend(): void;
+
+    static tryBlendFuncSeparate(a: number, b: number, c: number, d: number): void;
+
+    static disableTexture2D(): void;
+
+    static enableTexture2D(): void;
 
     static disableDepth(): void;
 
@@ -567,7 +582,17 @@ declare class Player {
 
     static isConnected(): boolean;
 
-    // TODO etTargetBlockPos(reach: number): BlockPos | undefined;
+    static getTargetBlockPos(reach: number): BlockPos | undefined;
+}
+
+declare class BlockPos {
+
+    getX(): number;
+    
+    getY(): number;
+
+    getZ(): number;
+
 }
 
 declare class Runtime {
@@ -595,6 +620,15 @@ declare class JavaSystem {
 
     static nanoTime(): number;
 }
+
+declare class Timer {
+
+    renderPartialTicks(): number;
+
+}
+
+
+declare const timer: Timer;
 
 declare class World {
     static getTime(): number | 0;
@@ -676,5 +710,17 @@ declare class Entity {
     getMonitionZ(): number;
 
     isOnGround(): boolean;
+
+    getPositionEyes(partialTicks: number): Vec3d;
+
+}
+
+declare class Vec3d {
+
+    getX(): number;
+
+    getY(): number;
+
+    getZ(): number;
 
 }

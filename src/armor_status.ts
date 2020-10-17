@@ -100,5 +100,14 @@ import { text, rect } from './api/gui';
 
 	});
 
+	PluginMessages.on(plugin, 'museum:disable', (bb)=>{
+		ChatExtensions.printChatMessage("Museum disabled!");
+	});
+	PluginMessages.on(plugin, 'disable', (bb)=>{
+		ChatExtensions.printChatMessage("Disabled!");
+		PluginMessages.off(plugin);
+		Events.off(plugin);
+	})
+
 })(plugin);
 

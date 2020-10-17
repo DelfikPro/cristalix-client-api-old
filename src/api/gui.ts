@@ -14,6 +14,17 @@ const depthMask = GL11.glDepthMask;
 const color = GL11.glColor4f;
 
 
+export const CENTER = {x: 0.5, y: 0.5};
+export const LEFT = {x: 0, y: 0.5};
+export const RIGHT = {x: 1, y: 0.5};
+export const TOP = {x: 0.5, y: 0};
+export const BOTTOM = {x: 0.5, y: 1};
+export const TOP_RIGHT = {x: 1, y: 0};
+export const TOP_LEFT = {x: 0, y: 0};
+export const BOTTOM_RIGHT = {x: 1, y: 1};
+export const BOTTOM_LEFT = {x: 0, y: 1};
+
+
 export type Callback = () => void;
 
 export class Animatable {
@@ -214,24 +225,44 @@ export abstract class Element {
     public prepare(time: number, parentWidth: number, parentHeight: number, elementWidth: number, elementHeight: number): void {
         if (!this.enabled) return;
         
+        this.updateAnimatables(time);
+
+        this.prepareAlign(parentWidth, parentHeight);
+        this.prepareRotation();
+        this.prepareOffset();
+        this.prepareScale();
+        this.prepareOrigin(elementWidth, elementHeight);
+        this.lastColor = colorParts2Hex(this.a.value, this.r.value, this.g.value, this.b.value);
+    }
+
+    public updateAnimatables(time: number) {
         var animatables = this.animatables;
         for (var i = 0; i < animatables.length; i++) {
             var animatable = animatables[i];
-            if (animatable.started) {
-                animatable.update(time);
-                Hz.i++;
-            }
+            if (animatable.started) animatable.update(time);
         }
+    }
 
+    public prepareAlign(parentWidth: number, parentHeight: number) {
+        if (this.alignX.value || this.alignY.value) translate(parentWidth * this.alignX.value, parentHeight * this.alignY.value, 0)        
+    }
 
-        if (this.alignX.value || this.alignY.value) translate(parentWidth * this.alignX.value, parentHeight * this.alignY.value, 0)
+    public prepareRotation() {
         if (this.rotationX.value) rotate(this.rotationX.value, 1, 0, 0);
         if (this.rotationY.value) rotate(this.rotationY.value, 0, 1, 0);
         if (this.rotationZ.value) rotate(this.rotationZ.value, 0, 0, 1);
+    }
+
+    public prepareOffset() {
         if (this.x.value || this.y.value || this.z.value) translate(this.x.value, this.y.value, 0/*this.z.value*/);
+    }
+
+    public prepareScale() {
         if (this.scale.value != 1) scale(this.scale.value, this.scale.value, this.scale.value);
+    }
+
+    public prepareOrigin(elementWidth: number, elementHeight: number) {
         if (this.originX.value || this.originY.value) translate(-elementWidth * this.originX.value, -elementHeight * this.originY.value, 0);
-        this.lastColor = colorParts2Hex(this.a.value, this.r.value, this.g.value, this.b.value);
     }
 
     public abstract render(time: number, parentWidth: number, parentHeight: number): void;
@@ -332,6 +363,18 @@ export class Box extends Element {
         pushMatrix();
         super.prepare(time, parentWidth, parentHeight, width, height);
 
+        this.render0(width, height);
+
+        for (var i = 0; i < this.children.length; i++) {
+            this.children[i].render(time, width, height);
+        }
+
+        popMatrix();
+
+    }
+
+    render0(width: number, height: number) {
+
         if (this.scale.value) {
             if (this.texture) {
                 Textures.bindTexture(this.texture);
@@ -345,68 +388,59 @@ export class Box extends Element {
             }
             else Draw.drawRect(0, 0, width, height, this.lastColor);
         }
-
-        for (var i = 0; i < this.children.length; i++) {
-            this.children[i].render(time, width, height);
-        }
-        // for (let child of this.children) 
-        //     child.render(time, width, height);
-
-        popMatrix();
-
     }
 
     checkHovered(ss: ScreenState, parentWidth: number, parentHeight: number): void {
 
-        if (!this.enabled) return;
+    //     if (!this.enabled) return;
 
-        // if (!stack.enabled || !(this.children.length || action)) return;
+    //     // if (!stack.enabled || !(this.children.length || action)) return;
 
-        let originX = this.originX.value;
-        let originY = this.originY.value;
-        let alignX = this.alignX.value;
-        let alignY = this.alignY.value;
-        let width = this.width.value;
-        let height = this.height.value;
-        let scale = this.scale.value;
-        let x = this.x.value;
-        let y = this.y.value;
+    //     let originX = this.originX.value;
+    //     let originY = this.originY.value;
+    //     let alignX = this.alignX.value;
+    //     let alignY = this.alignY.value;
+    //     let width = this.width.value;
+    //     let height = this.height.value;
+    //     let scale = this.scale.value;
+    //     let x = this.x.value;
+    //     let y = this.y.value;
 
-        ss.stackX += parentWidth * alignX * ss.stackScale;
-        ss.stackY += parentHeight * alignY * ss.stackScale;
-        ss.stackX += x * ss.stackScale;
-        ss.stackY += y * ss.stackScale;
-        ss.stackScale *= scale;
-        ss.stackX -= width * originX * ss.stackScale;
-        ss.stackY -= height * originY * ss.stackScale;
+    //     ss.stackX += parentWidth * alignX * ss.stackScale;
+    //     ss.stackY += parentHeight * alignY * ss.stackScale;
+    //     ss.stackX += x * ss.stackScale;
+    //     ss.stackY += y * ss.stackScale;
+    //     ss.stackScale *= scale;
+    //     ss.stackX -= width * originX * ss.stackScale;
+    //     ss.stackY -= height * originY * ss.stackScale;
 
-        let dx = ss.mouseX - ss.stackX;
-        let dy = ss.mouseY - ss.stackY;
+    //     let dx = ss.mouseX - ss.stackX;
+    //     let dy = ss.mouseY - ss.stackY;
 
-        let hovered = dx >= 0 && dx < width * ss.stackScale && dy >= 0 && dy < height * ss.stackScale;
-        if (this.hovered != hovered && this.onHover) {
-            this.onHover(ss, hovered);
-        }
-        this.hovered = hovered;
+    //     let hovered = dx >= 0 && dx < width * ss.stackScale && dy >= 0 && dy < height * ss.stackScale;
+    //     if (this.hovered != hovered && this.onHover) {
+    //         this.onHover(ss, hovered);
+    //     }
+    //     this.hovered = hovered;
 
-        if (this.hovered) {
-            if (ss.leftClick && this.onLeftClick) this.onLeftClick(ss);
-            if (ss.rightClick && this.onRightClick) this.onRightClick(ss);
-        }
+    //     if (this.hovered) {
+    //         if (ss.leftClick && this.onLeftClick) this.onLeftClick(ss);
+    //         if (ss.rightClick && this.onRightClick) this.onRightClick(ss);
+    //     }
 
-        for (let child of this.children) 
-            child.checkHovered(ss, parentWidth, parentHeight);
+    //     for (let child of this.children) 
+    //         child.checkHovered(ss, parentWidth, parentHeight);
 
-        // str = "stack: " + ss.stackX + " " + ss.stackY + " " + ss.stackScale + 
-        //  ", d: " + dx + " " + dy + ", pos: " + this.stack.x.value + " " + this.stack.y.value;
+    //     // str = "stack: " + ss.stackX + " " + ss.stackY + " " + ss.stackScale + 
+    //     //  ", d: " + dx + " " + dy + ", pos: " + this.stack.x.value + " " + this.stack.y.value;
 
-        ss.stackX += width * originX * ss.stackScale;
-        ss.stackY += height * originY * ss.stackScale;
-        ss.stackScale /= scale;
-        ss.stackX -= x * ss.stackScale;
-        ss.stackY -= y * ss.stackScale;
-        ss.stackX -= parentWidth * alignX * ss.stackScale;
-        ss.stackY -= parentHeight * alignY * ss.stackScale;
+    //     ss.stackX += width * originX * ss.stackScale;
+    //     ss.stackY += height * originY * ss.stackScale;
+    //     ss.stackScale /= scale;
+    //     ss.stackX -= x * ss.stackScale;
+    //     ss.stackY -= y * ss.stackScale;
+    //     ss.stackX -= parentWidth * alignX * ss.stackScale;
+    //     ss.stackY -= parentHeight * alignY * ss.stackScale;
 
     }
 
@@ -495,7 +529,7 @@ export function register(listener: any) {
         let screenState = getScreenState();
 
         for (let element of overlay) {
-            element.checkHovered(screenState, screenState.width, screenState.height);
+            // element.checkHovered(screenState, screenState.width, screenState.height);
         }
 
         // for (var i = 0; i < mouseButtons.length; i++) {
