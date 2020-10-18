@@ -91,7 +91,7 @@ import { text, rect } from './api/gui';
 
 		GL11.glTranslatef(
 			/*(eLastX + (eX - eLastX) * partialTicks)*/e.getX() - (pLastX + (pX - pLastX) * partialTicks),
-			/*(eLastY + (eY - eLastY) * partialTicks)*/e.getY() - (pLastY + (pY - pLastY) * partialTicks) + 0.8,
+			/*(eLastY + (eY - eLastY) * partialTicks)*/e.getY() - (pLastY + (pY - pLastY) * partialTicks) + 1,
 			/*(eLastZ + (eZ - eLastZ) * partialTicks)*/e.getZ() - (pLastZ + (pZ - pLastZ) * partialTicks)
 		);
 
@@ -106,8 +106,10 @@ import { text, rect } from './api/gui';
 		// GL11.glRotatef(-player.getRotationPitch(), 1, 0, 0);
 
 
-		healthIndicator.width.value = entity.getHealth() * 2;
-		healthBar.width.value = entity.getMaxHealth() * 2 + padding * 2;
+		var width = entity.getMaxHealth() * 2;
+		if (width > 70) width = 70;
+		healthIndicator.width.value = width * part;
+		healthBar.width.value = width + padding * 2;
 
 
 		let green = part * 2;

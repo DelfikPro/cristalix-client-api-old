@@ -234,6 +234,8 @@ declare class Textures {
 
     static bindTexture(textureLocation: string): void;
 
+    static bindTexture(textureLocation: ResourceLocation): void;
+
 }
 
 declare class Draw {
@@ -724,3 +726,53 @@ declare class Vec3d {
     getZ(): number;
 
 }
+
+declare class ProfileTexture {
+
+    constructor(url: string, metadata: Record<string, string>);
+
+}
+
+declare class ProfileTextureType {
+    
+    static SKIN: ProfileTextureType;
+    static CAPE: ProfileTextureType;
+    static ELYTRA: ProfileTextureType;
+
+}
+
+declare class ResourceLocation {
+
+}
+
+declare type SkinAvailableCallback = (type: ProfileTextureType, location: ResourceLocation, texture: ProfileTexture) => void;
+
+declare class SkinManager {
+    loadSkin(texture: ProfileTexture, type: ProfileTextureType, callback: SkinAvailableCallback): ResourceLocation;
+}
+
+declare const skinManager: SkinManager;
+
+declare class PrintStream {
+
+    println(message: any): void
+
+}
+
+declare const stdout: PrintStream;
+
+declare class KeyBinding {
+
+    isKeyDown(): boolean;
+
+    getKeyCategory(): string;
+
+    getKeyDescription(): string;
+
+    getKeyCodeDefault(): number;
+
+    getKeyCode(): number;
+
+}
+
+declare const keybinds: Record<string, KeyBinding>;
