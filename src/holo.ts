@@ -394,7 +394,7 @@ type TopEntry = {
 
 	PluginMessages.on(plugin, 'top-update', (buf: ByteBuf) => {
 		let str = UtilNetty.readString(buf, 16777215);
-		ChatExtensions.printChatMessage(str);
+		// ChatExtensions.printChatMessage(str);
 		let data = JSON.parse(str);
 		for (let key in data) {
 			for (let top of tops) {
@@ -407,7 +407,7 @@ type TopEntry = {
 
 	PluginMessages.on(plugin, 'top-create', (buf: ByteBuf) => {
 		let str = UtilNetty.readString(buf, 16777215);
-		ChatExtensions.printChatMessage(str);
+		// ChatExtensions.printChatMessage(str);
 		let data = JSON.parse(str);
 		for (let key in data) {
 			tops.push(new Top(key, data[key]));

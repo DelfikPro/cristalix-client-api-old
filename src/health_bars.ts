@@ -107,7 +107,7 @@ import { text, rect } from './api/gui';
 
 
 		var width = entity.getMaxHealth() * 2;
-		if (width > 70) width = 70;
+		if (width > 30) width = 30;
 		healthIndicator.width.value = width * part;
 		healthBar.width.value = width + padding * 2;
 
@@ -123,12 +123,14 @@ import { text, rect } from './api/gui';
 
 		GlStateManager.disableLighting();
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
+		GL11.glDepthMask(false);
 
 		// GlStateManager.enableBlend();
 		// GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
 
 		healthBar.render(JavaSystem.currentTimeMillis(), 0.001, 0.001);
 		GlStateManager.enableLighting();
+		GL11.glDepthMask(true);
 
 		GL11.glPopMatrix();
 	});
