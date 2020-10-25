@@ -121,6 +121,11 @@ declare class GL11 {
     static GL_LESS: number;
     static GL_EQUAL: number;
     static GL_LEQUAL: number;
+    static GL_NEVER: number;
+    static GL_GREATER: number;
+    static GL_NOTEQUAL: number;
+    static GL_GEQUAL: number;
+    static GL_ALWAYS: number;
     static GL_POLYGON_OFFSET_FILL: number;
     static GL_ZERO: number;
     static GL_ONE: number;
@@ -232,9 +237,7 @@ declare class RenderHelper {
 
 declare class Textures {
 
-    static bindTexture(textureLocation: string): void;
-
-    static bindTexture(textureLocation: ResourceLocation): void;
+    static bindTexture(textureLocation: string | ResourceLocation): void;
 
 }
 
@@ -760,6 +763,16 @@ declare class PrintStream {
 }
 
 declare const stdout: PrintStream;
+
+declare const fontRenderer: FontRenderer;
+declare class FontRenderer {
+
+    drawString(text: string, x: number, y: number, color: number, dropShadow: boolean): number;
+
+    getUnicodeFlag(): boolean;
+
+}
+
 
 declare class KeyBinding {
 

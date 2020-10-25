@@ -154,60 +154,60 @@ import * as vecmath from './api/vecmath';
 
 	});
 
+	var inviteText = '§9Dev §dFunc §fприглашает вас на тусовку';
+
 	var inviteBack = gui.rect({
-		width: 200,
+		width: Draw.getStringWidth(inviteText) + 16,
 		height: 20,
 		color: {a: 0.5, r: 0.1, g: 0.1, b: 0.1},
 		y: 10,
 		origin: gui.TOP_RIGHT,
 	})
 	var inviteBox = gui.rect({
-		width: 200,
+		width: Draw.getStringWidth(inviteText) + 16,
 		height: 20,
 		color: {a: 0.5, r: 0.1, g: 0.1, b: 0.1},
 		y: 10,
 		origin: gui.TOP_RIGHT,
 		children: [
 			gui.text({
-				text: '§9Dev §dFunc §fприглашает вас на тусовку',
+				text: inviteText,
 				origin: gui.CENTER,
 				align: gui.CENTER,
 			}),
 			gui.rect({
-				width: 15,
-				height: 15,
+				width: 16,
+				height: 16,
 				y: 2,
 				origin: gui.TOP_RIGHT,
 				align: gui.BOTTOM_RIGHT,
-				color: {a: 0.7, r: 0.15, g: 0.8, b: 0.15},
-				children: [
-					gui.text({
-						text: '䁻',
-						// shadow: true,
-						origin: gui.CENTER,
-						align: gui.CENTER,
-						y: 1,
-					})
-				]
+				texture: 'minecraft:textures/delfikpro/yes1.png',
+				color: {a:1,r:1,g:1,b:1},
+				onHover: (ss: gui.ScreenState, hovered: boolean) => {
+					// if (hovered)
+				}
+				// color: {a: 0.7, r: 0.15, g: 0.8, b: 0.15},
 			}),
 			gui.rect({
-				width: 15,
-				height: 15,
+				width: 16,
+				height: 16,
 				x: -18,
 				y: 2,
 				origin: gui.TOP_RIGHT,
 				align: gui.BOTTOM_RIGHT,
-				color: {a: 0.8, r: 0.15, g: 0.15, b: 0.15},
-				children: [
-					gui.text({
-						text: '§0䂄',
-						// shadow: true,
-						origin: gui.CENTER,
-						align: gui.CENTER,
-						scale: 0.8,
-						y: 1,
-					})
-				]
+				texture: 'minecraft:textures/delfikpro/no1.png',
+				color: {a:1,r:1,g:1,b:1},
+				// color: {a: 0.8, r: 0.15, g: 0.15, b: 0.15},
+				// children: [
+				// 	gui.text({
+				// 		text: '§0䂄',
+				// 		// shadow: true,
+				// 		origin: gui.CENTER,
+				// 		align: gui.CENTER,
+				// 		scale: 0.8,
+				// 		y: 1,
+				// 	})
+				// ]
 			})
 		]
 	});

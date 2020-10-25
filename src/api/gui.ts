@@ -120,10 +120,19 @@ export type ElementData = {
 export type BoxData = {
     readonly width?: number;
     readonly height?: number;
+    readonly uMin?: number;
+    readonly vMin?: number;
+    readonly uDelta?: number;
+    readonly vDelta?: number;
+    readonly textureWidth?: number;
+    readonly textureHeight?: number;
     readonly children?: Element[];
-    readonly texture?: string;
+    readonly texture?: string | ResourceLocation;
     readonly onLeftClick?: MouseHandler;
     readonly onRightClick?: MouseHandler;
+    readonly temp_magic?: boolean;
+    readonly afterRender?: () => void;
+    readonly beforeRender?: () => void;
     readonly onHover?: (screenState: ScreenState, hovered: boolean) => void;
 } & ElementData
 
@@ -311,7 +320,7 @@ export class Text extends Element {
         // GL11.glDepthFunc(GL11.GL_LESS);
         // GlStateManager.disableDepth();
 
-        if (this.scale.value) Draw.drawString(this.text, 0, 0, -1, this.shadow);
+        if (this.scale.value) Draw.drawString(this.text, 0, fontRenderer.getUnicodeFlag() ? 0 : 1, -1, this.shadow);
 
         // GL11.glDepthFunc(GL11.GL_LEQUAL);
         // GlStateManager.enableDepth();
@@ -332,10 +341,19 @@ export class Box extends Element {
     width: Animatable;
     height: Animatable;
     children: Element[];
-    texture: string;
+    texture: string | ResourceLocation;
+    uMin: number;
+    vMin: number;
+    uDelta: number;
+    vDelta: number;
+    textureWidth: number;
+    textureHeight: number;
+    temp_magic: boolean;
     onLeftClick: MouseHandler;
     onRightClick: MouseHandler;
     onHover: (screenState: ScreenState, hovered: boolean) => void;
+    afterRender: () => void;
+    beforeRender: () => void;
     hovered: boolean = false;
 
     constructor(data: BoxData) {
@@ -348,6 +366,15 @@ export class Box extends Element {
         this.onLeftClick = data.onLeftClick || null;
         this.onRightClick = data.onRightClick || null;
         this.onHover = data.onHover || null;
+        this.uMin = data.uMin || 0;
+        this.vMin = data.vMin || 0;
+        this.uDelta = data.uDelta || 256;
+        this.vDelta = data.vDelta || 256;
+        this.textureWidth = data.textureWidth || 256;
+        this.textureHeight = data.textureHeight || 256;
+        this.temp_magic = !!data.temp_magic;
+        this.beforeRender = data.beforeRender || null;
+        this.afterRender = data.afterRender || null;
 
     }
 
@@ -365,6 +392,8 @@ export class Box extends Element {
 
         this.render0(width, height);
 
+
+        translate(0, 0, 0.01);
         for (var i = 0; i < this.children.length; i++) {
             this.children[i].render(time, width, height);
         }
@@ -376,7 +405,11 @@ export class Box extends Element {
     render0(width: number, height: number) {
 
         if (this.scale.value) {
+
+            if (this.beforeRender) this.beforeRender();
+
             if (this.texture) {
+                GlStateManager.enableBlend();
                 Textures.bindTexture(this.texture);
                 color(
                     this.a.value,
@@ -384,63 +417,66 @@ export class Box extends Element {
                     this.g.value,
                     this.b.value
                 );
-                Draw.drawScaledCustomSizeModalRect(0, 0, 0, 0, 1, 1, width, height, 1, 1);
+                Draw.drawScaledCustomSizeModalRect(0, 0, this.uMin, this.vMin, this.uDelta, this.vDelta, width, height, this.textureWidth, this.textureHeight);
             }
-            else Draw.drawRect(0, 0, width, height, this.lastColor);
+            else {
+                Draw.drawRect(0, 0, width, height, this.lastColor);
+            }
+            if (this.afterRender) this.afterRender();
         }
     }
 
     checkHovered(ss: ScreenState, parentWidth: number, parentHeight: number): void {
 
-    //     if (!this.enabled) return;
+        if (!this.enabled) return;
 
-    //     // if (!stack.enabled || !(this.children.length || action)) return;
+        // if (!stack.enabled || !(this.children.length || action)) return;
 
-    //     let originX = this.originX.value;
-    //     let originY = this.originY.value;
-    //     let alignX = this.alignX.value;
-    //     let alignY = this.alignY.value;
-    //     let width = this.width.value;
-    //     let height = this.height.value;
-    //     let scale = this.scale.value;
-    //     let x = this.x.value;
-    //     let y = this.y.value;
+        let originX = this.originX.value;
+        let originY = this.originY.value;
+        let alignX = this.alignX.value;
+        let alignY = this.alignY.value;
+        let width = this.width.value;
+        let height = this.height.value;
+        let scale = this.scale.value;
+        let x = this.x.value;
+        let y = this.y.value;
 
-    //     ss.stackX += parentWidth * alignX * ss.stackScale;
-    //     ss.stackY += parentHeight * alignY * ss.stackScale;
-    //     ss.stackX += x * ss.stackScale;
-    //     ss.stackY += y * ss.stackScale;
-    //     ss.stackScale *= scale;
-    //     ss.stackX -= width * originX * ss.stackScale;
-    //     ss.stackY -= height * originY * ss.stackScale;
+        ss.stackX += parentWidth * alignX * ss.stackScale;
+        ss.stackY += parentHeight * alignY * ss.stackScale;
+        ss.stackX += x * ss.stackScale;
+        ss.stackY += y * ss.stackScale;
+        ss.stackScale *= scale;
+        ss.stackX -= width * originX * ss.stackScale;
+        ss.stackY -= height * originY * ss.stackScale;
 
-    //     let dx = ss.mouseX - ss.stackX;
-    //     let dy = ss.mouseY - ss.stackY;
+        let dx = ss.mouseX - ss.stackX;
+        let dy = ss.mouseY - ss.stackY;
 
-    //     let hovered = dx >= 0 && dx < width * ss.stackScale && dy >= 0 && dy < height * ss.stackScale;
-    //     if (this.hovered != hovered && this.onHover) {
-    //         this.onHover(ss, hovered);
-    //     }
-    //     this.hovered = hovered;
+        let hovered = dx >= 0 && dx < width * ss.stackScale && dy >= 0 && dy < height * ss.stackScale;
+        if (this.hovered != hovered && this.onHover) {
+            this.onHover(ss, hovered);
+        }
+        this.hovered = hovered;
 
-    //     if (this.hovered) {
-    //         if (ss.leftClick && this.onLeftClick) this.onLeftClick(ss);
-    //         if (ss.rightClick && this.onRightClick) this.onRightClick(ss);
-    //     }
+        if (this.hovered) {
+            if (ss.leftClick && this.onLeftClick) this.onLeftClick(ss);
+            if (ss.rightClick && this.onRightClick) this.onRightClick(ss);
+        }
 
-    //     for (let child of this.children) 
-    //         child.checkHovered(ss, parentWidth, parentHeight);
+        for (let child of this.children) 
+            child.checkHovered(ss, parentWidth, parentHeight);
 
-    //     // str = "stack: " + ss.stackX + " " + ss.stackY + " " + ss.stackScale + 
-    //     //  ", d: " + dx + " " + dy + ", pos: " + this.stack.x.value + " " + this.stack.y.value;
+        // str = "stack: " + ss.stackX + " " + ss.stackY + " " + ss.stackScale + 
+        //  ", d: " + dx + " " + dy + ", pos: " + this.stack.x.value + " " + this.stack.y.value;
 
-    //     ss.stackX += width * originX * ss.stackScale;
-    //     ss.stackY += height * originY * ss.stackScale;
-    //     ss.stackScale /= scale;
-    //     ss.stackX -= x * ss.stackScale;
-    //     ss.stackY -= y * ss.stackScale;
-    //     ss.stackX -= parentWidth * alignX * ss.stackScale;
-    //     ss.stackY -= parentHeight * alignY * ss.stackScale;
+        ss.stackX += width * originX * ss.stackScale;
+        ss.stackY += height * originY * ss.stackScale;
+        ss.stackScale /= scale;
+        ss.stackX -= x * ss.stackScale;
+        ss.stackY -= y * ss.stackScale;
+        ss.stackX -= parentWidth * alignX * ss.stackScale;
+        ss.stackY -= parentHeight * alignY * ss.stackScale;
 
     }
 
@@ -529,7 +565,7 @@ export function register(listener: any) {
         let screenState = getScreenState();
 
         for (let element of overlay) {
-            // element.checkHovered(screenState, screenState.width, screenState.height);
+            element.checkHovered(screenState, screenState.width, screenState.height);
         }
 
         // for (var i = 0; i < mouseButtons.length; i++) {
