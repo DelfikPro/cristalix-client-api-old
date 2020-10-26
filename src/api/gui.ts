@@ -234,7 +234,7 @@ export abstract class Element {
     public prepare(time: number, parentWidth: number, parentHeight: number, elementWidth: number, elementHeight: number): void {
         if (!this.enabled) return;
         
-        this.updateAnimatables(time);
+        // this.updateAnimatables(time);
 
         this.prepareAlign(parentWidth, parentHeight);
         this.prepareRotation();

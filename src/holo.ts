@@ -89,12 +89,12 @@ type TopEntry = {
 			this.boardWidth = data.boardWidth || 200;
 			this.spacing = data.spacing || 1;
 			this.lineHeight = data.lineHeight || 9;
-			this.squares = data.squares || 3;
+			this.squares = data.squares || 0;
 			this.indexWidth = data.indexWidth || 14;
 			this.statWidth = data.statWidth || 30;
 			this.color = data.color || {a: 0.5, r: 0, g: 0, b: 0};
 			this.title = data.title || address;
-			this.offset = (this.boardWidth - this.spacing * (this.squares - 1)) / this.squares;
+			this.offset = this.squares ? (this.boardWidth - this.spacing * (this.squares - 1)) / this.squares : 0;
 			
 			this.x = data.x;
 			this.y = data.y;
@@ -265,7 +265,7 @@ type TopEntry = {
 
 				// Простые тонкие строчки
 				let smallLineIndex = 0;
-				while (topData && place < 100) {
+				while (topData && place <= 15) {
 					place++;
 					let topInfo = topData.shift();
 					if (!topInfo) break;
@@ -327,7 +327,7 @@ type TopEntry = {
 
 			isVisible(line: gui.Element): boolean {
 				let y = line.y.value + this.board.y.value;
-				return y >= 0 && y < 100;
+				return y >= 0 && y < 150;
 			}
 
 			updateCulling(): void {
